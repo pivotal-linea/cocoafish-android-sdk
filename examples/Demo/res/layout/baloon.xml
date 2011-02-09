@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.cocoafish.demo.BaloonLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/transparent_panel"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingLeft="5px"
+    android:paddingTop="5px"
+    android:paddingRight="5px"
+    android:paddingBottom="5px">
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id = "@+id/placeInfo"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<TableRow>
+		<TextView android:id="@+id/placeName"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentLeft="true"	
+		    android:paddingRight="5px"  
+		   	android:paddingLeft="5px"  
+			android:textStyle="bold"      	         	   
+		 />
+	<!--  	 <ImageView
+            android:id="@+id/detailsButton"
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:paddingRight="5px"        
+            android:src="@drawable/details"
+            android:clickable="true"
+        />-->
+	</TableRow>
+	<TableRow>
+		<TextView android:id="@+id/placeAddress" 
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:textSize="5pt"
+		/>
+	</TableRow>
+</TableLayout>
+</com.cocoafish.demo.BaloonLayout>

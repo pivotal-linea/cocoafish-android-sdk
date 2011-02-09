@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_width="fill_parent" 
+    android:orientation="vertical"
+    android:layout_height="fill_parent">
+  
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:orientation="horizontal" 
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content">
+    
+    	<Button android:id="@+id/refresh"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:text="@string/refresh"
+   		/>
+    
+   		<Button android:id="@+id/logout"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:text="@string/logout"
+    	/>
+	</LinearLayout>
+	
+	<TextView android:id="@+id/UserName" 
+   		android:layout_height="wrap_content" 
+   		android:text="" 
+   		android:textStyle="normal|bold" 
+   		android:gravity="center_vertical|center_horizontal" 
+   		android:layout_width="fill_parent">
+   	</TextView>
+ 	<ListView android:id="@+id/CheckinListView" 
+ 		android:layout_height="wrap_content" android:layout_width="fill_parent">
+ 	</ListView>
+   
+    
+</LinearLayout>

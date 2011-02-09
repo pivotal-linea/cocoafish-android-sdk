@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Cocoafish Demo</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="email_address">Email Address</string>
+    <string name="password">Password</string>
+    <string name="password_confirm">Password Again</string>
+ 
+    <string name="signup">Sign Up</string>
+    <string name="signin">Sign In</string>
+	<string name="cancel">Cancel</string>   
+	<string name="done">Done</string>    
+	<string name="checkin">Check In</string>    
+	<string name="refresh">Refresh</string>    
+	<string name="logout">Logout</string>  
+	<string name="details">Details</string>      
+
+</resources>
