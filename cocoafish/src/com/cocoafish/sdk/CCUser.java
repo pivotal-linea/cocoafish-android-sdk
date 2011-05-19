@@ -44,12 +44,12 @@ public class CCUser extends CCObject implements Externalizable {
 		super(jObject);
 
 		try {
-			first = jObject.getString("first").trim();
+			first = jObject.getString("first_name").trim();
 		} catch (Exception e) {
 		}
 		
 		try {
-			last = jObject.getString("last").trim();
+			last = jObject.getString("last_name").trim();
 		} catch (Exception e) {
 		}
 		

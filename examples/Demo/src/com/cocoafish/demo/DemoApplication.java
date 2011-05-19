@@ -17,7 +17,7 @@ import com.cocoafish.sdk.Cocoafish;
  * of how to perform unit tests on an Application object.
  */
 public class DemoApplication extends Application {
-	public static final String APP_ID = "dadb53b0c84fe8da8cbfd89cabf3431d";
+	public static final String APP_ID = "XWjY9IIrsMDrelzVxvKW5LnykZJ2Merw";
 	public static final String FACEBOOK_APP_ID = "109836395704353";
 
     @Override

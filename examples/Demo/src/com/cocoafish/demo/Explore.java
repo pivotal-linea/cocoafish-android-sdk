@@ -287,7 +287,7 @@ public class Explore extends MapActivity {
 			}
 			for (CCPlace place : places) {
 				items.add(new OverlayItem(getPoint(place.getLatitude(), place.getLongitude()),
-						place.getName(), place.getAddress1()));
+						place.getName(), place.getAddress()));
 	    	}
 			populate();
 			fitPoints();

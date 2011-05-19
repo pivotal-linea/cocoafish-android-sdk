@@ -8,7 +8,7 @@ import android.os.Parcelable;
 
 public class CCPlace extends CCObject implements Parcelable {
 	private String name;
-	private String address1;
+	private String address;
 	private String address2;
 	private String crossStreet;
 	private String city;
@@ -33,8 +33,8 @@ public class CCPlace extends CCObject implements Parcelable {
 		return name;
 	}
 	
-	public String getAddress1() {
-		return address1;
+	public String getAddress() {
+		return address;
 	}
 	
 	public String getAddress2() {
@@ -71,8 +71,8 @@ public class CCPlace extends CCObject implements Parcelable {
 	
 	public String getFullAddress() {
 		String fullAddress = "";
-		if (address1 != null && address1.length() > 0) {
-			fullAddress = address1;
+		if (address != null && address.length() > 0) {
+			fullAddress = address;
 		}
 		if (address2 != null && address2.length() > 0) {
 			fullAddress += ", " + address2;
@@ -94,7 +94,7 @@ public class CCPlace extends CCObject implements Parcelable {
 				throw new CocoafishError("Invalid Server Response: CCPlace: Missing name");
 			}
 		try {
-			address1 = jObject.getString("address1").trim();
+			address = jObject.getString("address").trim();
 		} catch (JSONException e1) {
 			throw new CocoafishError("Invalid Server Response: CCPlace: Missing address1");
 		}
@@ -124,14 +124,14 @@ public class CCPlace extends CCObject implements Parcelable {
 		} catch (Exception e){
 		}
 		try {
-			latitude = Double.valueOf(jObject.getString("lat").trim()).doubleValue();
+			latitude = Double.valueOf(jObject.getString("latitude").trim()).doubleValue();
 		} catch (NumberFormatException e) {
 			throw new CocoafishError("Invalid Server Response: CCPlace: lat is not double");
 		} catch (JSONException e) {
 			throw new CocoafishError("Invalid Server Response: CCPlace: Missing lat");
 		}
 		try {
-			longitude = Double.valueOf(jObject.getString("lng").trim()).doubleValue();
+			longitude = Double.valueOf(jObject.getString("longitude").trim()).doubleValue();
 		} catch (NumberFormatException e) {
 			throw new CocoafishError("Invalid Server Response: CCPlace: lng is not double");
 		} catch (JSONException e) {
@@ -146,7 +146,7 @@ public class CCPlace extends CCObject implements Parcelable {
     public void writeToParcel(Parcel out, int flag) {
     	out.writeString(objectId);
         out.writeString(name);
-        out.writeString(address1);
+        out.writeString(address);
         out.writeString(address2);
         out.writeString(crossStreet);
         out.writeString(city);
@@ -159,7 +159,7 @@ public class CCPlace extends CCObject implements Parcelable {
     public void readFromParcel(Parcel in) {
     	objectId = in.readString();
         name = in.readString();
-        address1 = in.readString();
+        address = in.readString();
         address2 = in.readString();
         crossStreet = in.readString();
         city = in.readString();

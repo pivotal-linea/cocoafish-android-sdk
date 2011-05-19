@@ -36,7 +36,7 @@ public class CCObject implements Externalizable {
 		
 		SimpleDateFormat ccDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		try {
-			String dateString = jObject.getString("updatedDate");
+			String dateString = jObject.getString("updated_at");
 			updatedDate = ccDateFormatter.parse(dateString);
 		} catch (JSONException e) {
 	//		throw new CocoafishError("Invalid Server Response: " + this.getClass().getName() + ": Missing updatedDate");
@@ -45,7 +45,7 @@ public class CCObject implements Externalizable {
 		}  
 		
 		try {
-			String dateString = jObject.getString("createdDate");
+			String dateString = jObject.getString("created_at");
 			createdDate = ccDateFormatter.parse(dateString);
 		} catch (JSONException e) {
 	//		throw new CocoafishError("Invalid Server Response: " + this.getClass().getName() + ": Missing createdDate");
