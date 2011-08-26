@@ -34,7 +34,7 @@ public class CCMeta {
 	
 	public CCMeta(JSONObject jObject) throws CocoafishError {
 		try {
-			status = jObject.getString("stat").trim();
+			status = jObject.getString("status").trim();
 		} catch (JSONException e1) {
 			throw new CocoafishError("Invalid Server Response: CCMeta: Missing stat");
 		}
@@ -53,7 +53,7 @@ public class CCMeta {
 		}
 		
 		try {
-			method = jObject.getString("method").trim();
+			method = jObject.getString("method_name").trim();
 		} catch (Exception e) {
 		}
 		

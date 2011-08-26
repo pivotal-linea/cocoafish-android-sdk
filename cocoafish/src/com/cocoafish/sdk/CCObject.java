@@ -59,7 +59,6 @@ public class CCObject implements Externalizable {
 		
 	}
 
-	@Override
 	public void readExternal(ObjectInput input) throws IOException,
 			ClassNotFoundException {
 		boolean hasObjectId = input.readBoolean();
@@ -87,7 +86,6 @@ public class CCObject implements Externalizable {
 		}
 	}
 
-	@Override
 	public void writeExternal(ObjectOutput output) throws IOException {
 		boolean hasObjectId = true;
 		if (objectId == null || objectId.trim().length() == 0) {

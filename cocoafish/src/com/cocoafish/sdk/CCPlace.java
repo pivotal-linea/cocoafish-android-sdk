@@ -169,7 +169,6 @@ public class CCPlace extends CCObject implements Parcelable {
         longitude = in.readDouble();
     }
 
-	@Override
 	public int describeContents() {
 		return 0;
 	}

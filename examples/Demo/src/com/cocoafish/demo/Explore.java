@@ -84,7 +84,6 @@ public class Explore extends MapActivity {
 	    list.setFocusable(true);
 	    list.setSelected(true);
 	    list.setOnItemClickListener(new ListView.OnItemClickListener() {
-	  	      @Override
 		      public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
 
 			   	    list.setSelection(position);
