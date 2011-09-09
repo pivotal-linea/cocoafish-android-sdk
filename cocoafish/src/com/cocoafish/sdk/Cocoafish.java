@@ -69,7 +69,7 @@ public class Cocoafish {
 	/**
 	 * 
 	 * @param actionUrl The last fragment of request url
-	 * @param requestType The method of request, it could be "PUT", "GET", "POST", "DELETE" 
+	 * @param requestMethod It only can be one of CCRequestMthod.GET, CCRequestMthod.POST, CCRequestMthod.PUT, CCRequestMthod.DELETE.  
 	 * @param dataMap The name-value pairs which is ready to be sent to server, 
 	 * 			the value only can be String type or java.io.File type 
 	 * @param useSecure Decide whether use http or https protocol.
@@ -77,7 +77,7 @@ public class Cocoafish {
 	 * @throws IOException If there is network problem, the method will throw this type of exception.
 	 * @throws CocoafishError If other problems cause the request cannot be fulfilled, the CocoafishError will be threw.
 	 */
-	public CCResponse sendRequest(String actionUrl, String requestType, 
+	public CCResponse sendRequest(String actionUrl, CCRequestMethod requestMethod, 
 			   Map<String, Object> dataMap, boolean useSecure) throws IOException, CocoafishError{
 		CCResponse response = null;
 		
@@ -103,6 +103,10 @@ public class Cocoafish {
 				}
 			}
 		} 
+		if( requestMethod == null || requestMethod.getTypeString() == null )
+			throw new CocoafishError("The request method cannot be null.");
+		
+		String requestType = requestMethod.getTypeString();
 		
 		if( oauthConsumerKey!= null && this.oauthConsumerSecret != null )
 		{
@@ -278,6 +282,14 @@ public class Cocoafish {
 		
 	}
 
+    // This method is just used for test, 
+    // and it will be delete in the final version code.
+	public static void initialize(String comsuerKey, String comsumerSecret, String facebookAppId,
+			Context applicationContext) {
+		testFish = new Cocoafish(comsuerKey, comsumerSecret, facebookAppId, applicationContext);
+		
+	}
+	
 	// This method is just used for test, 
     // and it will be delete in the final version code.
 	public static Cocoafish getDefaultInstance() {
