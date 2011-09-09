@@ -1,8 +1,11 @@
 package com.cocoafish.demo;
 
 import java.io.IOException;
+import java.util.HashMap;
 
+import com.cocoafish.sdk.CCRequestMethod;
 import com.cocoafish.sdk.CCRestfulRequest;
+import com.cocoafish.sdk.Cocoafish;
 import com.cocoafish.sdk.CocoafishError;
 
 import android.app.Activity;
@@ -52,9 +55,16 @@ public class SignUp extends Activity {
 
     	String errorMsg = null;
 		try {
-	    	CCRestfulRequest signupRequest;
-	    	signupRequest = new CCRestfulRequest();
-	    	signupRequest.registerUser(email, "", firstName, lastName, password);
+			HashMap<String, Object> dataMap = new HashMap<String, Object>();
+			dataMap.put("email", email);
+			dataMap.put("password", password);
+			dataMap.put("password_confirmation", password);
+			dataMap.put("first_name", firstName);
+			dataMap.put("last_name", lastName);
+			Cocoafish.getDefaultInstance().sendRequest("users/create.json", CCRequestMethod.POST, dataMap, false);
+	    	/*CCRestfulRequest signupRequest;
+	    	signupRequest = new CCRestfulRequest(Cocoafish.getDefaultInstance());
+	    	signupRequest.registerUser(email, "", firstName, lastName, password);*/
 	    	Intent intent = new Intent();
             setResult(RESULT_OK, intent);
             finish();

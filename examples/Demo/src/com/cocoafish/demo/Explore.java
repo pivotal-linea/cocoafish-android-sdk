@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import com.cocoafish.sdk.CCPlace;
 import com.cocoafish.sdk.CCRestfulRequest;
+import com.cocoafish.sdk.Cocoafish;
 import com.cocoafish.sdk.CocoafishError;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
@@ -225,7 +226,7 @@ public class Explore extends MapActivity {
 			CCRestfulRequest request = null;
 			List<CCPlace> places = null;
 			try {
-				request = new CCRestfulRequest();
+				request = new CCRestfulRequest(Cocoafish.getDefaultInstance());
 				places = request.getPlaces(CCRestfulRequest.FIRST_PAGE, CCRestfulRequest.DEFAULT_PER_PAGE);
 			} catch (CocoafishError e) {
 				errorMsg = e.getLocalizedMessage();

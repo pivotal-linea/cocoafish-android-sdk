@@ -75,7 +75,7 @@ public class CCRestfulRequest {
    public synchronized void logoutUser() throws IOException {
 	   
 	   try {
-		String requestUrl = BACKEND_URL + "/users/logout.json?key=" + cocoafish.getAppId();
+		String requestUrl = BACKEND_URL + "/users/logout.json?key=" + cocoafish.getAppKey();
 
 		response = performGet(requestUrl);
 		cocoafish.setCurrentUser(null);
@@ -87,7 +87,7 @@ public class CCRestfulRequest {
    }
    
    public synchronized CCUser facebookUserLogin(String accessToken, String facebookAppId) throws CocoafishError, IOException {
-	   String requestUrl = BACKEND_URL + "/fb_login.json?key=" + cocoafish.getAppId();
+	   String requestUrl = BACKEND_URL + "/fb_login.json?key=" + cocoafish.getAppKey();
 
 	// Create post Data
 	   List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
@@ -116,7 +116,7 @@ public class CCRestfulRequest {
 	   return user;   }
    
    public synchronized CCUser loginUser(String login, String password) throws CocoafishError, IOException {
-	   String requestUrl = BACKEND_URL + "/users/login.json?key=" + cocoafish.getAppId();
+	   String requestUrl = BACKEND_URL + "/users/login.json?key=" + cocoafish.getAppKey();
 	   
 	   // Create post Data
 	   List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
@@ -148,7 +148,7 @@ public class CCRestfulRequest {
    public synchronized CCUser registerUser(String email, String userName, String first, String last, String password) throws CocoafishError, IOException {
 	   
 	   // construct the request url
-	   String requestUrl = 	BACKEND_URL + "/users/create.json?key=" + cocoafish.getAppId();
+	   String requestUrl = 	BACKEND_URL + "/users/create.json?key=" + cocoafish.getAppKey();
 	   
 	   // Add post data
 	   List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
@@ -183,7 +183,7 @@ public class CCRestfulRequest {
    
    public synchronized void deleteUser() throws CocoafishError, IOException {
 	   // construct the request url
-	   String requestUrl = 	BACKEND_URL + "/users.json?app=" + cocoafish.getAppId();
+	   String requestUrl = 	BACKEND_URL + "/users.json?app=" + cocoafish.getAppKey();
 	 
 	   response = performDelete(requestUrl);
 	   
@@ -196,7 +196,7 @@ public class CCRestfulRequest {
 
    public synchronized List<CCPlace> getPlaces(int page, int perPage) throws CocoafishError, IOException {
 	   String requestUrl = BACKEND_URL + "/places/search.json?key=" + 
-	   				cocoafish.getAppId()  + 
+	   				cocoafish.getAppKey()  + 
 	   				"&page="+page+"&per_page=" + perPage;
 	   response = performGet(requestUrl);
 	   List<CCPlace> places = null;
@@ -209,7 +209,7 @@ public class CCRestfulRequest {
    }
  
    public synchronized List<CCCheckin> getCheckinsForUser(String userId, int page, int perPage) throws CocoafishError, IOException {
-	   String requestUrl = BACKEND_URL + "/checkins/search.json?key=" + cocoafish.getAppId() + "&user_id=" + userId+
+	   String requestUrl = BACKEND_URL + "/checkins/search.json?key=" + cocoafish.getAppKey() + "&user_id=" + userId+
 	   		"&page="+page+"&per_page=" + perPage;
 	   response = performGet(requestUrl);
 	   List<CCCheckin> checkins = null;
@@ -223,7 +223,7 @@ public class CCRestfulRequest {
    }
    
    public synchronized List<CCCheckin> getCheckinsForPlace(String placeId, int page, int perPage) throws CocoafishError, IOException {
-	   String requestUrl = BACKEND_URL + "/checkins/search.json?key=" + cocoafish.getAppId() + "&place_id=" + placeId +
+	   String requestUrl = BACKEND_URL + "/checkins/search.json?key=" + cocoafish.getAppKey() + "&place_id=" + placeId +
 	   		"&page="+page+"&per_page=" + perPage;
 	   response = performGet(requestUrl);
 	   
@@ -238,7 +238,7 @@ public class CCRestfulRequest {
    }
    
    public synchronized CCCheckin checkinPlace(String placeId) throws CocoafishError, IOException {
-	   String requestUrl = BACKEND_URL + "/checkins/create.json?key=" + cocoafish.getAppId() + "&place_id="+placeId;
+	   String requestUrl = BACKEND_URL + "/checkins/create.json?key=" + cocoafish.getAppKey() + "&place_id="+placeId;
 	   
 	   CCCheckin checkin = null;
 	   response = performPost(requestUrl, null);
@@ -257,7 +257,7 @@ public class CCRestfulRequest {
    public synchronized CCStatus createUserStatus(String newStatus) throws CocoafishError, IOException {
 	   CCUser currentUser = cocoafish.getCurrentUser();
 	   String requestUrl = BACKEND_URL + "/users/" + currentUser.getObjectId() + 
-	   			"/status.json?key=" + cocoafish.getAppId();
+	   			"/status.json?key=" + cocoafish.getAppKey();
 	  
 	   // Add post data
 	   List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
@@ -278,7 +278,7 @@ public class CCRestfulRequest {
    
    public synchronized List<CCStatus> getUserStatuses(String userId, int page, int perPage) throws CocoafishError, IOException {
 	   String requestUrl = BACKEND_URL + "/users/" + userId + "/status/search.json?key=" + 
-	   			cocoafish.getAppId()  + 
+	   			cocoafish.getAppKey()  + 
 	   			"&page="+page+"&per_page=" + perPage;
 	   response = performGet(requestUrl);
 	   List<CCStatus> statuses = null;
@@ -292,7 +292,7 @@ public class CCRestfulRequest {
    
    public synchronized CCPlace getPlace(String placeId) throws CocoafishError, IOException {
 	   String requestUrl = BACKEND_URL + "/places/" + placeId +".json?app=" + 
-	   		cocoafish.getAppId();
+	   		cocoafish.getAppKey();
 	   
 	   CCPlace place = null;
 	   response = performGet(requestUrl);
@@ -309,7 +309,7 @@ public class CCRestfulRequest {
    
    public synchronized CCStatus createPlaceStatus(String placeId, String newStatus) throws CocoafishError, IOException {
 	   String requestUrl = BACKEND_URL + "/places/" + placeId + 
-	   		"/status.json?app=" + cocoafish.getAppId();
+	   		"/status.json?app=" + cocoafish.getAppKey();
 	  
 	   // Add post data
 	   List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
@@ -330,7 +330,7 @@ public class CCRestfulRequest {
    
    public synchronized List<CCStatus> getPlaceStatus(String placeId, int page, int perPage) throws CocoafishError, IOException {
 	   String requestUrl = BACKEND_URL + "/places/" + placeId + 
-	   		"/status.json?app=" + cocoafish.getAppId() + 
+	   		"/status.json?app=" + cocoafish.getAppKey() + 
 	   		"&page="+page+"&per_page=" + perPage;
 	   
 	   response = performGet(requestUrl);
@@ -345,7 +345,7 @@ public class CCRestfulRequest {
    
    public synchronized CCPhoto uploadPhoto(CCPlace place, File photoFile) throws CocoafishError, IOException {
 	   String requestUrl = BACKEND_URL + "/places/" + place.getObjectId() + 
-  		"/photos.json?app=" + cocoafish.getAppId();
+  		"/photos.json?app=" + cocoafish.getAppKey();
 	   
 	   response = performUploadPhoto(requestUrl, null, photoFile);
 	   CCPhoto photo = null;
@@ -362,7 +362,7 @@ public class CCRestfulRequest {
    
    public synchronized List<CCPhoto> getPhotosForPlace(String placeId, int page, int perPage) throws CocoafishError, IOException {
 	   String requestUrl = BACKEND_URL + "/places/" + placeId + 
-  		"/photos.json?app=" + cocoafish.getAppId() + 
+  		"/photos.json?app=" + cocoafish.getAppKey() + 
   		"&page="+page+"&per_page=" + perPage;
   
 	   response = performGet(requestUrl);
@@ -377,7 +377,7 @@ public class CCRestfulRequest {
    
    public synchronized CCPhoto getPhoto(String photoId) throws CocoafishError, IOException {
 	   String requestUrl = BACKEND_URL + "/photos/" + photoId + 
-  			".json?app=" + cocoafish.getAppId();
+  			".json?app=" + cocoafish.getAppKey();
   
 	   response = performGet(requestUrl);
 	   CCPhoto photo = null;
@@ -393,7 +393,7 @@ public class CCRestfulRequest {
    }
    
    public synchronized void storeKeyValue(String key, String value) throws CocoafishError, IOException {
-	   	String requestUrl = BACKEND_URL + "/keyvalues.json?app=" + cocoafish.getAppId();
+	   	String requestUrl = BACKEND_URL + "/keyvalues.json?app=" + cocoafish.getAppKey();
 	   	
 	    // Create post Data
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
@@ -415,7 +415,7 @@ public class CCRestfulRequest {
 	   } catch (UnsupportedEncodingException e) {
 		   throw new CocoafishError("Failed to encode key: " + key +". " + e.getLocalizedMessage());
 	   }
-	   String requestUrl = BACKEND_URL + "/keyvalues.json?app=" + cocoafish.getAppId() +
+	   String requestUrl = BACKEND_URL + "/keyvalues.json?app=" + cocoafish.getAppKey() +
 		   "&key="+encodedKey;
 	   response = performGet(requestUrl);
 	   CCKeyValuePair keyvalue = null;	

@@ -34,9 +34,6 @@ public class UserView extends Activity {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (CocoafishError e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
     }
   
@@ -61,7 +58,7 @@ public class UserView extends Activity {
     	String password = ((EditText) findViewById(R.id.pw)).getText().toString();
     	String errorMsg = null;
     	try {
-	    	CCRestfulRequest signinRequest = new CCRestfulRequest();
+	    	CCRestfulRequest signinRequest = new CCRestfulRequest(Cocoafish.getDefaultInstance());
 	    	signinRequest.loginUser(login, password);
         	showUserView();
 		} catch (CocoafishError e) {
@@ -91,7 +88,7 @@ public class UserView extends Activity {
     }
     
     protected void performLogout() {
-	    CCRestfulRequest logoutRequest = new CCRestfulRequest();
+	    CCRestfulRequest logoutRequest = new CCRestfulRequest(Cocoafish.getDefaultInstance());
 	    try {
 			logoutRequest.logoutUser();
 		} catch (IOException e) {
@@ -133,12 +130,7 @@ public class UserView extends Activity {
         	public void onClick(View view) {
         		final String[] PERMISSIONS =
         	        new String[] {"publish_stream", "email", "read_stream", "offline_access"};
-        		try {
-					Cocoafish.getDefaultInstance().facebookAhtorize(UserView.this, PERMISSIONS, null);
-				} catch (CocoafishError e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+        		Cocoafish.getDefaultInstance().facebookAhtorize(UserView.this, PERMISSIONS, null);
 	    }});
     }
     
@@ -163,10 +155,7 @@ public class UserView extends Activity {
             name.setText(currentUser.getFirst() + " " + currentUser.getLast());
         } catch (Exception e) {
 			e.printStackTrace();
-        } catch (CocoafishError e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        }
         performRefresh();
     }
   
@@ -221,7 +210,7 @@ public class UserView extends Activity {
 			CCRestfulRequest request = null;
 			List<CCCheckin> checkins = null;
 			try {
-				request = new CCRestfulRequest();
+				request = new CCRestfulRequest(Cocoafish.getDefaultInstance());
 				checkins = request.getCheckinsForUser(Cocoafish.getDefaultInstance().getCurrentUser().getObjectId(), 
 								CCRestfulRequest.FIRST_PAGE, CCRestfulRequest.DEFAULT_PER_PAGE);
 			} catch (CocoafishError e) {

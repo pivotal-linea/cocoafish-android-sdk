@@ -62,10 +62,7 @@ public class PlaceView extends Activity {
         } catch (Exception e) {
 			checkinButton.setEnabled(true);
 
-        } catch (CocoafishError e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        }
     	new GetCheckinsTask().execute();
 
     }
@@ -79,7 +76,7 @@ public class PlaceView extends Activity {
     	CCCheckin checkin = null;
     	String errorMsg = null;
     	try {
-	    	CCRestfulRequest checkinRequest = new CCRestfulRequest();
+	    	CCRestfulRequest checkinRequest = new CCRestfulRequest(Cocoafish.getDefaultInstance());
 	    	checkin = checkinRequest.checkinPlace(place.getObjectId());
 	    	listOfCheckin.add(0, checkin);
 			showCheckins();
@@ -152,7 +149,7 @@ public class PlaceView extends Activity {
 			CCRestfulRequest request = null;
 			List<CCCheckin> checkins = null;
 			try {
-				request = new CCRestfulRequest();
+				request = new CCRestfulRequest(Cocoafish.getDefaultInstance());
 				checkins = request.getCheckinsForPlace(place.getObjectId(), CCRestfulRequest.FIRST_PAGE, CCRestfulRequest.DEFAULT_PER_PAGE);
 			} catch (CocoafishError e) {
 				// TODO Auto-generated catch block
