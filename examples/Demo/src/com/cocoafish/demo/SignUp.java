@@ -61,7 +61,7 @@ public class SignUp extends Activity {
 			dataMap.put("password_confirmation", password);
 			dataMap.put("first_name", firstName);
 			dataMap.put("last_name", lastName);
-			Cocoafish.getDefaultInstance().sendRequest("users/create.json", CCRequestMethod.POST, dataMap, false);
+			DemoApplication.getSdk().sendRequest("users/create.json", CCRequestMethod.POST, dataMap, false);
 	    	/*CCRestfulRequest signupRequest;
 	    	signupRequest = new CCRestfulRequest(Cocoafish.getDefaultInstance());
 	    	signupRequest.registerUser(email, "", firstName, lastName, password);*/

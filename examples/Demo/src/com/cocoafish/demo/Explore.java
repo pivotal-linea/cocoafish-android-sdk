@@ -226,7 +226,7 @@ public class Explore extends MapActivity {
 			CCRestfulRequest request = null;
 			List<CCPlace> places = null;
 			try {
-				request = new CCRestfulRequest(Cocoafish.getDefaultInstance());
+				request = new CCRestfulRequest(DemoApplication.getSdk());
 				places = request.getPlaces(CCRestfulRequest.FIRST_PAGE, CCRestfulRequest.DEFAULT_PER_PAGE);
 			} catch (CocoafishError e) {
 				errorMsg = e.getLocalizedMessage();
