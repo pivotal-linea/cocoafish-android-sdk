@@ -3,7 +3,7 @@ package com.cocoafish.demo;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cocoafish.sdk.CCPlace;
+import com.cocoafish.sdk.CCResponse;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -16,13 +16,13 @@ import android.widget.TextView;
 // Adapter to show a list of checkins
 public class PlaceAdapter extends BaseAdapter  {
     private Context context;
-    private List<CCPlace> listPlace = new ArrayList<CCPlace>();
+    private List<CCResponse> listPlace = new ArrayList<CCResponse>();
 
     public PlaceAdapter(Context context) {
         this.context = context;
     }
     
-    public void setPlaces(List<CCPlace> places) {
+    public void setPlaces(List<CCResponse> places) {
     	this.listPlace=places;
         notifyDataSetChanged();
     }
@@ -40,7 +40,7 @@ public class PlaceAdapter extends BaseAdapter  {
     }
 
     public View getView(int position, View convertView, ViewGroup viewGroup) {
-        CCPlace entry = listPlace.get(position);
+        CCResponse entry = listPlace.get(position);
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -50,11 +50,11 @@ public class PlaceAdapter extends BaseAdapter  {
         }
         TextView placeName = (TextView) convertView.findViewById(R.id.placeName);
         placeName.setTextColor(Color.BLACK);
-        placeName.setText(entry.getName());
+        //placeName.setText(entry.getName());
        
         TextView placeAddress = (TextView) convertView.findViewById(R.id.placeAddress);
         placeAddress.setTextColor(Color.BLACK);
-        placeAddress.setText(entry.getFullAddress());
+        //placeAddress.setText(entry.getFullAddress());
 
         return convertView;
     }

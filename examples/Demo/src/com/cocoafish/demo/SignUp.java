@@ -3,11 +3,6 @@ package com.cocoafish.demo;
 import java.io.IOException;
 import java.util.HashMap;
 
-import com.cocoafish.sdk.CCRequestMethod;
-import com.cocoafish.sdk.CCRestfulRequest;
-import com.cocoafish.sdk.Cocoafish;
-import com.cocoafish.sdk.CocoafishError;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -16,6 +11,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+
+import com.cocoafish.sdk.CCRequestMethod;
+import com.cocoafish.sdk.CocoafishError;
 
 
 public class SignUp extends Activity {
@@ -71,9 +69,7 @@ public class SignUp extends Activity {
 		} catch (CocoafishError e) {
 			errorMsg = e.getMessage();
 			
-		} catch (IOException e) {
-			errorMsg = "Network Error: " + e.getLocalizedMessage();
-		}
+		} 
 		dialog.dismiss();
 		
 		if (errorMsg != null) {

@@ -1,7 +1,12 @@
 package com.cocoafish.demo;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -16,18 +21,26 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.cocoafish.sdk.*;
+import com.cocoafish.sdk.CCMeta;
+import com.cocoafish.sdk.CCRequestMethod;
+import com.cocoafish.sdk.CCResponse;
+import com.cocoafish.sdk.Cocoafish;
+import com.cocoafish.sdk.CocoafishError;
 
 public class UserView extends Activity {
 
     static final int LAUNCH_SIGNUP = 0;
-    List<CCCheckin> listOfCheckin;
-    
+    List<CCResponse> listOfCheckin;
+    private Cocoafish sdk;
+    private DemoSession session;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        sdk = DemoApplication.getSdk();
+        session = DemoApplication.getSession();
         try {
-			if (DemoApplication.getSdk().getCurrentUser() == null) {
+			if ( session.getAttribute("User") == null) {
 				showLoginView();
 			} else {
             	showUserView();
@@ -58,14 +71,25 @@ public class UserView extends Activity {
     	String password = ((EditText) findViewById(R.id.pw)).getText().toString();
     	String errorMsg = null;
     	try {
-	    	CCRestfulRequest signinRequest = new CCRestfulRequest(DemoApplication.getSdk());
-	    	signinRequest.loginUser(login, password);
-        	showUserView();
+	    	HashMap<String, Object> dataMap = new HashMap<String, Object>();
+	    	dataMap.put("login", login);
+	    	dataMap.put("password", password);
+	    	CCResponse response = sdk.sendRequest("users/login.json", CCRequestMethod.POST, dataMap, false);
+	    	CCMeta meta = response.getMeta();
+	    	if( !"OK".equals( meta.getStatus() ) )
+	    			throw new CocoafishError(meta.getMessage());
+	    	
+	    	JSONObject responseJSON = response.getResponseData();
+	    	JSONArray usersArr = responseJSON.getJSONArray("users");
+	    	JSONObject userInfo = usersArr.getJSONObject(0);
+	    	session.setAttribute("User", userInfo);
+	    	
+	    	showUserView();
 		} catch (CocoafishError e) {
 			errorMsg = e.getMessage();
-    	} catch (IOException e) {
-			errorMsg = "Network Error: " + e.getLocalizedMessage();
-		}
+    	} catch (JSONException e) {
+    		errorMsg = e.getMessage();
+    	} 
 		dialog.dismiss();
 		
 		if (errorMsg != null) {
@@ -88,11 +112,11 @@ public class UserView extends Activity {
     }
     
     protected void performLogout() {
-	    CCRestfulRequest logoutRequest = new CCRestfulRequest(DemoApplication.getSdk());
 	    try {
-			logoutRequest.logoutUser();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			CCResponse response = sdk.sendRequest("users/logout.json", CCRequestMethod.GET, null, false);
+			
+			session.setAttribute("User", null);	
+		} catch (CocoafishError e) {
 			e.printStackTrace();
 		}
 		showLoginView();
@@ -124,14 +148,6 @@ public class UserView extends Activity {
         	public void onClick(View view) {
         		startActivityForResult(new Intent(UserView.this, SignUp.class), LAUNCH_SIGNUP);
 	    }});
-        
-        View fbButton = findViewById(R.id.facebookAuth);
-        fbButton.setOnClickListener(new View.OnClickListener() {
-        	public void onClick(View view) {
-        		final String[] PERMISSIONS =
-        	        new String[] {"publish_stream", "email", "read_stream", "offline_access"};
-        		DemoApplication.getSdk().facebookAhtorize(UserView.this, PERMISSIONS, null);
-	    }});
     }
     
     protected void showUserView()
@@ -151,15 +167,15 @@ public class UserView extends Activity {
        
         try {
             TextView name = (TextView)findViewById(R.id.UserName);
-            CCUser currentUser = DemoApplication.getSdk().getCurrentUser();
-            name.setText(currentUser.getFirst() + " " + currentUser.getLast());
+            JSONObject userInfo = (JSONObject) session.getAttribute("User");
+            name.setText( userInfo.getString("first_name") + " " + userInfo.getString("last_user") );
         } catch (Exception e) {
 			e.printStackTrace();
         }
         performRefresh();
     }
   
-    protected void showCheckins(List<CCCheckin> checkins) {
+    protected void showCheckins(List<CCResponse> checkins) {
         
     	if (checkins == null) {
     		return;
@@ -174,7 +190,7 @@ public class UserView extends Activity {
         list.setAdapter(adapter);
     }
     
-	private class GetCheckinsTask extends AsyncTask<Void, Void, List<CCCheckin>> {
+	private class GetCheckinsTask extends AsyncTask<Void, Void, List<CCResponse>> {
 		private final ProgressDialog dialog = new ProgressDialog(UserView.this);
 	    private String errorMsg = null;
 	    protected void onPreExecute()
@@ -183,7 +199,7 @@ public class UserView extends Activity {
 	        dialog.show();
 	    }
 	    
-	    protected void onPostExecute(List<CCCheckin> checkins) {
+	    protected void onPostExecute(List<CCResponse> checkins) {
 	    	 if(this.dialog.isShowing())
 	         {
 	             this.dialog.dismiss();
@@ -206,9 +222,9 @@ public class UserView extends Activity {
 	    }
 
 		@Override
-		protected List<CCCheckin> doInBackground(Void...params) {
-			CCRestfulRequest request = null;
-			List<CCCheckin> checkins = null;
+		protected List<CCResponse> doInBackground(Void...params) {
+			/*CCRestfulRequest request = null;
+			List<CCResponse> checkins = null;
 			try {
 				request = new CCRestfulRequest(DemoApplication.getSdk());
 				checkins = request.getCheckinsForUser(DemoApplication.getSdk().getCurrentUser().getObjectId(), 
@@ -218,7 +234,8 @@ public class UserView extends Activity {
 			} catch (IOException e) {
 				errorMsg = e.getLocalizedMessage();
 			}
-			return checkins;
+			return checkins;*/
+			return null;
 		}
 	}
 

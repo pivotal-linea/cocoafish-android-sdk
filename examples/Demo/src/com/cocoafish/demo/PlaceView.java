@@ -21,8 +21,8 @@ import com.cocoafish.sdk.*;
 public class PlaceView extends Activity {
 
     static final int LAUNCH_SIGNUP = 0;
-    List<CCCheckin> listOfCheckin = new ArrayList<CCCheckin>();
-    CCPlace place;
+    List<CCResponse> listOfCheckin = new ArrayList<CCResponse>();
+    CCResponse place;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,10 +30,10 @@ public class PlaceView extends Activity {
         setContentView(R.layout.placeview);
         Intent intent = getIntent(); 
         Parcelable p = intent.getParcelableExtra("place"); 
-        if (p != null && p instanceof CCPlace) {
-        	place = (CCPlace) p; 
+        if (p != null && p instanceof CCResponse) {
+        	place = (CCResponse) p; 
         	TextView name = (TextView)findViewById(R.id.PlaceName);
-            name.setText(place.getName());
+//            name.setText(place.getName());
         }
         
         View doneButton = findViewById(R.id.done);
@@ -55,7 +55,7 @@ public class PlaceView extends Activity {
         }});
         
         try {
-			if (DemoApplication.getSdk().getCurrentUser() == null) {
+			if (DemoApplication.getSession().getAttribute("USer") == null) {
 				// disable check in button
 				checkinButton.setEnabled(false);
 			}
@@ -73,19 +73,18 @@ public class PlaceView extends Activity {
     
     protected void performCheckin()  {
 
-    	CCCheckin checkin = null;
+    	CCResponse checkin = null;
     	String errorMsg = null;
     	try {
-	    	CCRestfulRequest checkinRequest = new CCRestfulRequest(DemoApplication.getSdk());
-	    	checkin = checkinRequest.checkinPlace(place.getObjectId());
+//	    	CCRestfulRequest checkinRequest = new CCRestfulRequest(DemoApplication.getSdk());
+//	    	checkin = checkinRequest.checkinPlace(place.getObjectId());
+    		DemoApplication.getSdk().sendRequest(null, null, null, false);
 	    	listOfCheckin.add(0, checkin);
 			showCheckins();
 
 		} catch (CocoafishError e) {
 			errorMsg = e.getMessage();
-		} catch (IOException e) {
-			errorMsg = "Network Error: " + e.getMessage();
-		}
+		} 
 		
 		if (errorMsg != null) {
 			AlertDialog alertDialog = new AlertDialog.Builder(this).create();
@@ -112,7 +111,7 @@ public class PlaceView extends Activity {
         list.setAdapter(adapter);
     }
     
-	private class GetCheckinsTask extends AsyncTask<Void, Void, List<CCCheckin>> {
+	private class GetCheckinsTask extends AsyncTask<Void, Void, List<CCResponse>> {
 		private final ProgressDialog dialog = new ProgressDialog(PlaceView.this);
 	    private String errorMsg = null;
 	    protected void onPreExecute()
@@ -121,7 +120,7 @@ public class PlaceView extends Activity {
 	        dialog.show();
 	    }
 	    
-	    protected void onPostExecute(List<CCCheckin> checkins) {
+	    protected void onPostExecute(List<CCResponse> checkins) {
 	    	 if(this.dialog.isShowing())
 	         {
 	             this.dialog.dismiss();
@@ -145,19 +144,16 @@ public class PlaceView extends Activity {
 	     }
 
 		@Override
-		protected List<CCCheckin> doInBackground(Void...params) {
-			CCRestfulRequest request = null;
-			List<CCCheckin> checkins = null;
-			try {
-				request = new CCRestfulRequest(DemoApplication.getSdk());
-				checkins = request.getCheckinsForPlace(place.getObjectId(), CCRestfulRequest.FIRST_PAGE, CCRestfulRequest.DEFAULT_PER_PAGE);
-			} catch (CocoafishError e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		protected List<CCResponse> doInBackground(Void...params) {
+			List<CCResponse> checkins = null;
+//			try {
+//				request = new CCRestfulRequest(DemoApplication.getSdk());
+//				checkins = request.getCheckinsForPlace(place.getObjectId(), CCRestfulRequest.FIRST_PAGE, CCRestfulRequest.DEFAULT_PER_PAGE);
+//			} catch (CocoafishError e) {
+//				e.printStackTrace();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
 			return checkins;
 		}
 	}

@@ -2,7 +2,7 @@ package com.cocoafish.demo;
 
 import java.util.List;
 
-import com.cocoafish.sdk.CCCheckin;
+import com.cocoafish.sdk.CCResponse;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -15,9 +15,9 @@ import android.widget.TextView;
 public class CheckinAdapter extends BaseAdapter {
     private Context context;
     private boolean isPlaceView;
-    private List<CCCheckin> listCheckin;
+    private List<CCResponse> listCheckin;
 
-    public CheckinAdapter(Context context, List<CCCheckin> listCheckin, boolean isPlaceView) {
+    public CheckinAdapter(Context context, List<CCResponse> listCheckin, boolean isPlaceView) {
         this.context = context;
         this.listCheckin = listCheckin;
         this.isPlaceView = isPlaceView;
@@ -36,7 +36,7 @@ public class CheckinAdapter extends BaseAdapter {
     }
 
     public View getView(int position, View convertView, ViewGroup viewGroup) {
-        CCCheckin entry = listCheckin.get(position);
+        CCResponse entry = listCheckin.get(position);
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -44,13 +44,13 @@ public class CheckinAdapter extends BaseAdapter {
         }
         TextView checkinInfo = (TextView) convertView.findViewById(R.id.checkinInfo);
         if (isPlaceView) {
-        	checkinInfo.setText(entry.getUser().getFirst() + " checked in");
+        	//checkinInfo.setText(entry.getUser().getFirst() + " checked in");
         } else {
-        	checkinInfo.setText("Checked in at " + entry.getPlace().getName());
+        	//checkinInfo.setText("Checked in at " + entry.getPlace().getName());
         }
 
         TextView checkinDate = (TextView) convertView.findViewById(R.id.checkinDate);
-        checkinDate.setText(entry.getCreatedDate().toString());
+        //checkinDate.setText(entry.getCreatedDate().toString());
 
         return convertView;
     }

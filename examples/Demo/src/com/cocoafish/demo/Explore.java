@@ -22,8 +22,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.cocoafish.sdk.CCPlace;
-import com.cocoafish.sdk.CCRestfulRequest;
+import com.cocoafish.sdk.CCResponse;
 import com.cocoafish.sdk.Cocoafish;
 import com.cocoafish.sdk.CocoafishError;
 import com.google.android.maps.GeoPoint;
@@ -40,7 +39,7 @@ import java.util.List;
 public class Explore extends MapActivity {
 	private MapView map=null;
 	private MyLocationOverlay me=null;
-	private List<CCPlace> places;
+	private List<CCResponse> places;
 	private SitesOverlay overlay;
 	private BaloonLayout noteBaloon;
     
@@ -89,7 +88,7 @@ public class Explore extends MapActivity {
 
 			   	    list.setSelection(position);
 
-		    	 	CCPlace place = (CCPlace) list.getItemAtPosition(position);
+		    	 	CCResponse place = (CCResponse) list.getItemAtPosition(position);
 
 		    	    Intent myIntent = new Intent(getBaseContext(), PlaceView.class);
 		    	    myIntent.putExtra("place", (Parcelable)place);
@@ -181,14 +180,14 @@ public class Explore extends MapActivity {
 	    map.setEnabled(true);
 	}
 	
-	public void setPlaces(List<CCPlace> newPlaces) {
+	public void setPlaces(List<CCResponse> newPlaces) {
 		places = newPlaces;
 		overlay.update();
 		ListView list = (ListView) findViewById(R.id.placeList);
 	    ((PlaceAdapter)list.getAdapter()).setPlaces(places);
 	}
 	
-	private class GetPlacesTask extends AsyncTask<Void, Void, List<CCPlace>> {
+	private class GetPlacesTask extends AsyncTask<Void, Void, List<CCResponse>> {
 
 	    private final ProgressDialog dialog = new ProgressDialog(Explore.this);
 	    private String errorMsg = null;
@@ -197,7 +196,7 @@ public class Explore extends MapActivity {
 	        dialog.setMessage("Loading...");
 	        dialog.show();
 	    }
-	     protected void onPostExecute(List<CCPlace> places) {
+	     protected void onPostExecute(List<CCResponse> places) {
 	      
 	    	 if(this.dialog.isShowing())
 	         {
@@ -222,9 +221,9 @@ public class Explore extends MapActivity {
 	     }
 
 		@Override
-		protected List<CCPlace> doInBackground(Void...params) {
-			CCRestfulRequest request = null;
-			List<CCPlace> places = null;
+		protected List<CCResponse> doInBackground(Void...params) {
+			/*CCRestfulRequest request = null;
+			List<CCResponse> places = null;
 			try {
 				request = new CCRestfulRequest(DemoApplication.getSdk());
 				places = request.getPlaces(CCRestfulRequest.FIRST_PAGE, CCRestfulRequest.DEFAULT_PER_PAGE);
@@ -233,7 +232,8 @@ public class Explore extends MapActivity {
 			} catch (IOException e) {
 				errorMsg = "Network Error: " + e.getLocalizedMessage();
 			}
-			return places;
+			return places;*/
+			return null;
 		}
 		
 	}
@@ -241,7 +241,7 @@ public class Explore extends MapActivity {
 	private class SitesOverlay extends ItemizedOverlay<OverlayItem> {
 		private List<OverlayItem> items=new ArrayList<OverlayItem>();
 		private Drawable marker=null;
-		private CCPlace selectedPlace = null;
+		private CCResponse selectedPlace = null;
 	    private void fitPoints() {
 	    	
 	    	if (places == null || places.size() == 0) {
@@ -254,11 +254,11 @@ public class Explore extends MapActivity {
 	    	int seLng = -180 * 1000000;  
 	    	// find bounding lats and lngs  
 
-	    	for (CCPlace place : places) {
-	    		nwLat = Math.max(nwLat, (int)(place.getLatitude() * 1000000));
+	    	for (CCResponse place : places) {
+	    		/*nwLat = Math.max(nwLat, (int)(place.getLatitude() * 1000000));
 	    		nwLng = Math.min(nwLng, (int)(place.getLongitude() * 1000000));
 	    		seLat = Math.min(seLat, (int)(place.getLatitude() * 1000000));
-	    		seLng = Math.max(seLng, (int)(place.getLongitude() * 1000000));
+	    		seLng = Math.max(seLng, (int)(place.getLongitude() * 1000000));*/
 	    	}
 	    	GeoPoint center = new GeoPoint((nwLat + seLat) / 2, (nwLng + seLng) / 2);  
 	    	// add padding in each direction  
@@ -285,9 +285,9 @@ public class Explore extends MapActivity {
 			if (places == null) {
 				return;
 			}
-			for (CCPlace place : places) {
-				items.add(new OverlayItem(getPoint(place.getLatitude(), place.getLongitude()),
-						place.getName(), place.getAddress()));
+			for (CCResponse place : places) {
+				//items.add(new OverlayItem(getPoint(place.getLatitude(), place.getLongitude()),
+				//		place.getName(), place.getAddress()));
 	    	}
 			populate();
 			fitPoints();
@@ -312,7 +312,7 @@ public class Explore extends MapActivity {
 			OverlayItem item=getItem(i);
 			GeoPoint geo=item.getPoint();
 
-			CCPlace place= places.get(i);
+			CCResponse place= places.get(i);
 			if (selectedPlace == place) {
 				// user tapped on the same pin again, this will remove the baloon
 				map.removeView(noteBaloon);
@@ -324,8 +324,8 @@ public class Explore extends MapActivity {
 			map.removeView(noteBaloon);
 			map.getController().animateTo(geo);
 			
-			((TextView)noteBaloon.findViewById(R.id.placeName)).setText(place.getName());
-			((TextView)noteBaloon.findViewById(R.id.placeAddress)).setText(place.getFullAddress());
+			//((TextView)noteBaloon.findViewById(R.id.placeName)).setText(place.getName());
+			//((TextView)noteBaloon.findViewById(R.id.placeAddress)).setText(place.getFullAddress());
 			map.addView(noteBaloon, new MapView.LayoutParams(MapView.LayoutParams.WRAP_CONTENT,70,geo,MapView.LayoutParams.BOTTOM_CENTER));
 			
 			return(true);

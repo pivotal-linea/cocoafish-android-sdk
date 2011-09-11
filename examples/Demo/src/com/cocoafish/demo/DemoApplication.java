@@ -24,8 +24,10 @@ public class DemoApplication extends Application {
 	public static final String APP_COMSUMER_KEY = "YrTFbGEWLhysLsb9QamiqrYWZFXyjgHZ";
 	public static final String APP_COMSUMER_SECRET = "ENrGw1tVVNGTC9wkjDxnpKQ4DAsFCGiX";
 	private static Cocoafish sdk = null;
+	private static DemoSession session = null;
 
-    @Override
+
+	@Override
     public void onCreate() {
         /*
          * This populates the default values from the preferences XML file. See
@@ -34,7 +36,8 @@ public class DemoApplication extends Application {
         PreferenceManager.setDefaultValues(this, R.xml.default_values, false);
         
         // initialize Cocoafish
-        initializeSDK(APP_COMSUMER_KEY, APP_COMSUMER_SECRET, FACEBOOK_APP_ID, getApplicationContext());
+        initialize(APP_COMSUMER_KEY, APP_COMSUMER_SECRET);
+
         TestDriver td = new TestDriver(getSdk());
         
         td.testSDK();
@@ -42,9 +45,10 @@ public class DemoApplication extends Application {
         System.out.println("passed");
     }
 
-    private static void initializeSDK(String appComsumerKey, String appComsumerSecret,
-			String facebookAppId, Context applicationContext) {
-		sdk = new Cocoafish(appComsumerKey, appComsumerSecret, facebookAppId, applicationContext);
+    private static void initialize(String appComsumerKey, String appComsumerSecret ) {
+		sdk = new Cocoafish(appComsumerKey, appComsumerSecret);
+		session = new DemoSession();
+		
 	}
 	@Override
     public void onTerminate() {
@@ -54,4 +58,7 @@ public class DemoApplication extends Application {
 		return sdk;
 	}
 
+    public static DemoSession getSession() {
+		return session;
+	}
 }
