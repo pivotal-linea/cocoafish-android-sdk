@@ -27,7 +27,7 @@ public class UserView extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-			if (Cocoafish.getDefaultInstance().getCurrentUser() == null) {
+			if (DemoApplication.getSdk().getCurrentUser() == null) {
 				showLoginView();
 			} else {
             	showUserView();
@@ -58,7 +58,7 @@ public class UserView extends Activity {
     	String password = ((EditText) findViewById(R.id.pw)).getText().toString();
     	String errorMsg = null;
     	try {
-	    	CCRestfulRequest signinRequest = new CCRestfulRequest(Cocoafish.getDefaultInstance());
+	    	CCRestfulRequest signinRequest = new CCRestfulRequest(DemoApplication.getSdk());
 	    	signinRequest.loginUser(login, password);
         	showUserView();
 		} catch (CocoafishError e) {
@@ -88,7 +88,7 @@ public class UserView extends Activity {
     }
     
     protected void performLogout() {
-	    CCRestfulRequest logoutRequest = new CCRestfulRequest(Cocoafish.getDefaultInstance());
+	    CCRestfulRequest logoutRequest = new CCRestfulRequest(DemoApplication.getSdk());
 	    try {
 			logoutRequest.logoutUser();
 		} catch (IOException e) {
@@ -130,7 +130,7 @@ public class UserView extends Activity {
         	public void onClick(View view) {
         		final String[] PERMISSIONS =
         	        new String[] {"publish_stream", "email", "read_stream", "offline_access"};
-        		Cocoafish.getDefaultInstance().facebookAhtorize(UserView.this, PERMISSIONS, null);
+        		DemoApplication.getSdk().facebookAhtorize(UserView.this, PERMISSIONS, null);
 	    }});
     }
     
@@ -151,7 +151,7 @@ public class UserView extends Activity {
        
         try {
             TextView name = (TextView)findViewById(R.id.UserName);
-            CCUser currentUser = Cocoafish.getDefaultInstance().getCurrentUser();
+            CCUser currentUser = DemoApplication.getSdk().getCurrentUser();
             name.setText(currentUser.getFirst() + " " + currentUser.getLast());
         } catch (Exception e) {
 			e.printStackTrace();
@@ -210,8 +210,8 @@ public class UserView extends Activity {
 			CCRestfulRequest request = null;
 			List<CCCheckin> checkins = null;
 			try {
-				request = new CCRestfulRequest(Cocoafish.getDefaultInstance());
-				checkins = request.getCheckinsForUser(Cocoafish.getDefaultInstance().getCurrentUser().getObjectId(), 
+				request = new CCRestfulRequest(DemoApplication.getSdk());
+				checkins = request.getCheckinsForUser(DemoApplication.getSdk().getCurrentUser().getObjectId(), 
 								CCRestfulRequest.FIRST_PAGE, CCRestfulRequest.DEFAULT_PER_PAGE);
 			} catch (CocoafishError e) {
 				errorMsg = e.getLocalizedMessage();

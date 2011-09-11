@@ -55,7 +55,7 @@ public class PlaceView extends Activity {
         }});
         
         try {
-			if (Cocoafish.getDefaultInstance().getCurrentUser() == null) {
+			if (DemoApplication.getSdk().getCurrentUser() == null) {
 				// disable check in button
 				checkinButton.setEnabled(false);
 			}
@@ -76,7 +76,7 @@ public class PlaceView extends Activity {
     	CCCheckin checkin = null;
     	String errorMsg = null;
     	try {
-	    	CCRestfulRequest checkinRequest = new CCRestfulRequest(Cocoafish.getDefaultInstance());
+	    	CCRestfulRequest checkinRequest = new CCRestfulRequest(DemoApplication.getSdk());
 	    	checkin = checkinRequest.checkinPlace(place.getObjectId());
 	    	listOfCheckin.add(0, checkin);
 			showCheckins();
@@ -149,7 +149,7 @@ public class PlaceView extends Activity {
 			CCRestfulRequest request = null;
 			List<CCCheckin> checkins = null;
 			try {
-				request = new CCRestfulRequest(Cocoafish.getDefaultInstance());
+				request = new CCRestfulRequest(DemoApplication.getSdk());
 				checkins = request.getCheckinsForPlace(place.getObjectId(), CCRestfulRequest.FIRST_PAGE, CCRestfulRequest.DEFAULT_PER_PAGE);
 			} catch (CocoafishError e) {
 				// TODO Auto-generated catch block
