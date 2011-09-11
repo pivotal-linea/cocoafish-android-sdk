@@ -34,10 +34,10 @@ public class TestDriver {
 	private static final String USER_ROLE = "role";
 	private static final String USER_LOGIN = "login";
 	
-	private static final String URL_CREATE_USER = "users/create.json";
-	private static final String URL_LOGIN_USER = "users/login.json";
-	private static final String URL_UPDATE_USER = "users/update.json";
-	private static final String URL_LOGOUT_USER = "users/logout.json";
+	private static final String URL_CREATE_USER = "/users/create.json";
+	private static final String URL_LOGIN_USER = "/users/login.json";
+	private static final String URL_UPDATE_USER = "/users/update.json";
+	private static final String URL_LOGOUT_USER = "/users/logout.json";
 	
 	private static final String METHOD_POST = "POST";
 	private static final String METHOD_GET = "GET";
@@ -80,6 +80,7 @@ public class TestDriver {
 		loginUser("dongjerry355", "Pass1234");
 		updateUser();
 		logoutUser();
+		int stop;
 		//updateUser();
 	}
 	
@@ -98,7 +99,7 @@ public class TestDriver {
 	
 	public void logoutUser(){
 		try {
-			CCResponse response = sdk.sendRequest( URL_LOGOUT_USER, CCRequestMethod.POST, null, false);
+			CCResponse response = sdk.sendRequest( URL_LOGOUT_USER, CCRequestMethod.GET, null, false);
 		} catch (CocoafishError e) {
 			e.printStackTrace();
 		}
