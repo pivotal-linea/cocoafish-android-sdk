@@ -25,6 +25,7 @@
 			<fileset dir="${classes.dir}" includes="**/*.*" />
 		</jar>
 		<antcall target="clean" />
+		<antcall target="copyToDemoApp" />
 	</target>
 	
 	<target name="compile" depends="init">
@@ -35,5 +36,13 @@
 	
 	<target name="clean">
 		<delete dir="${classes.dir}" quiet="true"/>
+	</target>
+	
+	<target name="copyToDemoApp">
+		<copy todir="../examples/Demo/lib">
+			<fileset dir="${output.dir}">
+				<include name="${jar.name}" />
+			</fileset>
+		</copy>
 	</target>
 </project>
