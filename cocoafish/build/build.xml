@@ -1,0 +1,39 @@
+<project name="Cocoafish Android SDK" default="dist" basedir="../">
+	<description>Cocoafish Android SDK</description>
+	
+	<property environment="env" />
+	<fail unless="env.ANDROID_HOME" message="ANDROID_HOME needs to be defined as an environment variable or in the Ant build." />
+	<property name="ANDROID_HOME" location="${env.ANDROID_HOME}" />
+	<property name="android.jar.path" value="${ANDROID_HOME}/android.jar" />
+	<property name="classes.dir" value="classes" />
+	<property file="${basedir}/build/build.properties"/>
+	
+	<path id="compile.classpath">
+		<fileset dir="${lib.dir}" includes="*.jar"/>
+		<pathelement path="${android.jar.path}"/>
+	</path>
+	
+	<target name="dist" depends="jar">
+	</target>
+
+	<target name="init">
+		<mkdir dir="${classes.dir}"/>
+	</target>
+	
+	<target name="jar" depends="compile">
+		<jar jarfile="${output.dir}/${jar.name}">
+			<fileset dir="${classes.dir}" includes="**/*.*" />
+		</jar>
+		<antcall target="clean" />
+	</target>
+	
+	<target name="compile" depends="init">
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" source="1.6" target="1.6">
+			<classpath refid="compile.classpath" />
+		</javac>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${classes.dir}" quiet="true"/>
+	</target>
+</project>

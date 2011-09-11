@@ -1,8 +1,5 @@
 package com.cocoafish.sdk;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,66 +48,6 @@ public class CCResponse {
 			
 		}
 		 
-	}
-	
-	@SuppressWarnings("unchecked")
-	public <T> List<T> getArrayOfObjects(String tagName) throws CocoafishError {
-		List<T> returnArray = null;
-		try {
-			JSONArray jsonObjArray = responseData.getJSONArray(tagName);
-			returnArray = new ArrayList<T>(jsonObjArray.length());
-			for (int i = 0; i < jsonObjArray.length(); i++) {
-				T curObj = null;
-				if (tagName == "users") {
-					curObj = (T) new CCUser(jsonObjArray.getJSONObject(i));
-				} else if (tagName == "places") {
-					curObj = (T) new CCPlace(jsonObjArray.getJSONObject(i));
-				} else if (tagName == "checkins") {
-					curObj = (T) new CCCheckin(jsonObjArray.getJSONObject(i));
-				} else if (tagName == "statuses") {
-					curObj = (T) new CCStatus(jsonObjArray.getJSONObject(i));
-				} else if (tagName == "photos") {
-					curObj = (T) new CCPhoto(jsonObjArray.getJSONObject(i));
-				} else if (tagName == "keyvalues") {
-					curObj = (T) new CCKeyValuePair(jsonObjArray.getJSONObject(i));
-				}
-				returnArray.add(curObj);
-			}
-		} catch (Exception e) {
-			throw new CocoafishError(e.getLocalizedMessage());
-		}
-		
-		return returnArray;
-	}
-	
-	public List<CCUser> getUsersFromResponse() throws CocoafishError {
-		List<CCUser> users = getArrayOfObjects("users");
-		return users;
-	}
-	
-	public List<CCPlace> getPlacesFromResponse() throws CocoafishError {
-		List<CCPlace> places = getArrayOfObjects("places");
-		return places;
-	}
-	
-	public List<CCCheckin> getCheckinsFromResponse() throws CocoafishError  {
-		List<CCCheckin> checkins = getArrayOfObjects("checkins");
-		return checkins;
-	}
-	
-	public List<CCStatus> getStatusesFromResponse() throws CocoafishError  {
-		List<CCStatus> statuses = getArrayOfObjects("statuses");
-		return statuses;
-	}
-	
-	public List<CCPhoto> getPhotosFromResponse() throws CocoafishError  {
-		List<CCPhoto> photos = getArrayOfObjects("photos");
-		return photos;
-	}
-	
-	public List<CCKeyValuePair> getKeyvaluesFromResponse() throws CocoafishError  {
-		List<CCKeyValuePair> keyvalues = getArrayOfObjects("keyvalues");
-		return keyvalues;
 	}
 }
 
