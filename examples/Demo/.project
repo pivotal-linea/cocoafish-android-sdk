@@ -30,11 +30,4 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>cocoafish-android_src</name>
-			<type>2</type>
-			<locationURI>_android_cocoafish_android_39374003/src</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>
