@@ -9,8 +9,10 @@ import java.net.FileNameMap;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,8 +26,10 @@ import oauth.signpost.signature.HmacSha1MessageSigner;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
@@ -36,8 +40,7 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.json.JSONObject;
@@ -108,31 +111,24 @@ public class Cocoafish {
 		CCResponse response = null;
 
 		try {
-			// List<NameValuePair> nameValuePairs = null; // store all request
 			// parameters
-			Map<String, File> fileMap = null; // store the requested file and
-												// its parameter name
+			List<NameValuePair> paramsPairs = null; // store all request
+			Map<String, File> fileMap = null; // store the requested file and its parameter name
 
 			if (params != null && !params.isEmpty()) {
 				Iterator<String> it = params.keySet().iterator();
 				while (it.hasNext()) {
 					String name = it.next();
 					Object value = params.get(name);
-
-					/*
-					 * if (value instanceof String) { if (nameValuePairs ==
-					 * null) nameValuePairs = new ArrayList<NameValuePair>();
-					 * nameValuePairs.add(new BasicNameValuePair(name, (String)
-					 * value)); } else if (value instanceof File) { if (fileMap
-					 * == null) fileMap = new HashMap<String, File>();
-					 * fileMap.put(name, (File) value); }
-					 */
-
-					if (value instanceof File) {
-						if (fileMap == null)
+					
+					if (value instanceof String) { 
+						if (paramsPairs == null) 
+							paramsPairs = new ArrayList<NameValuePair>();
+						paramsPairs.add(new BasicNameValuePair(name, (String)value)); 
+					} else if (value instanceof File) { 
+						if (fileMap == null) 
 							fileMap = new HashMap<String, File>();
 						fileMap.put(name, (File) value);
-						params.remove(name);
 					}
 				}
 			}
@@ -172,13 +168,9 @@ public class Cocoafish {
 				CCMultipartEntity entity = new CCMultipartEntity();
 
 				// Append the nameValuePairs to request's url string
-				if (params != null && !params.isEmpty()) {
-					Iterator<String> it = params.keySet().iterator();
-					while (it.hasNext()) {
-						String name = it.next();
-						String value = (String) params.get(name);
-						entity.addPart(URLEncoder.encode(name),
-								URLEncoder.encode(value));
+				if (paramsPairs != null && !paramsPairs.isEmpty()) {
+					for(NameValuePair pair: paramsPairs) {
+						entity.addPart(URLEncoder.encode(pair.getName()), URLEncoder.encode(pair.getValue()));
 					}
 				}
 
@@ -190,26 +182,20 @@ public class Cocoafish {
 					File file = fileMap.get(name);
 
 					FileNameMap fileNameMap = URLConnection.getFileNameMap();
-					String mimeType = fileNameMap.getContentTypeFor(file
-							.getName());
+					String mimeType = fileNameMap.getContentTypeFor(file.getName());
 					// Assume there is only one file in the map.
 					entity.addPart(name, new FileBody(file, mimeType));
 				}
 				if (request instanceof HttpEntityEnclosingRequestBase) {
-					((HttpEntityEnclosingRequestBase) request)
-							.setEntity(entity);
+					((HttpEntityEnclosingRequestBase) request).setEntity(entity);
 				}
 			} else {
-				if (params != null && !params.isEmpty()) {
-					HttpParams httpParams = new BasicHttpParams();
-					Iterator<String> it = params.keySet().iterator();
-					while (it.hasNext()) {
-						String name = it.next();
-						String value = (String) params.get(name);
-						httpParams.setParameter(URLEncoder.encode(name),
-								URLEncoder.encode(value));
+				if (paramsPairs != null && !paramsPairs.isEmpty()) {
+					if (request instanceof HttpEntityEnclosingRequestBase) {
+						if (paramsPairs != null && !paramsPairs.isEmpty()) {
+							((HttpEntityEnclosingRequestBase) request).setEntity(new UrlEncodedFormEntity(paramsPairs)); 
+				    	}
 					}
-					request.setParams(httpParams);
 				}
 			}
 
@@ -228,8 +214,7 @@ public class Cocoafish {
 			HttpContext localContext = new BasicHttpContext();
 			// localContext.setAttribute(ClientContext.COOKIE_STORE,
 			// cocoafish.getCookieStore());
-			HttpResponse httpResponse = httpClient.execute(request,
-					localContext);
+			HttpResponse httpResponse = httpClient.execute(request, localContext);
 			HttpEntity entity = httpResponse.getEntity();
 
 			if (entity != null) {

@@ -34,10 +34,10 @@ public class TestDriver {
 	private static final String USER_ROLE = "role";
 	private static final String USER_LOGIN = "login";
 	
-	private static final String URL_CREATE_USER = "/users/create.json";
-	private static final String URL_LOGIN_USER = "/users/login.json";
-	private static final String URL_UPDATE_USER = "/users/update.json";
-	private static final String URL_LOGOUT_USER = "/users/logout.json";
+	private static final String URL_CREATE_USER = "users/create.json";
+	private static final String URL_LOGIN_USER = "users/login.json";
+	private static final String URL_UPDATE_USER = "users/update.json";
+	private static final String URL_LOGOUT_USER = "users/logout.json";
 	
 	private static final String METHOD_POST = "POST";
 	private static final String METHOD_GET = "GET";
