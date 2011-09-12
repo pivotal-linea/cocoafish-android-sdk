@@ -94,7 +94,7 @@ public class Cocoafish {
 	 * @param method
 	 *            It only can be one of CCRequestMthod.GET, CCRequestMthod.POST,
 	 *            CCRequestMthod.PUT, CCRequestMthod.DELETE.
-	 * @param params
+	 * @param data
 	 *            The name-value pairs which is ready to be sent to server, the
 	 *            value only can be String type or java.io.File type
 	 * @param useSecure
@@ -107,7 +107,7 @@ public class Cocoafish {
 	 *             If other problems cause the request cannot be fulfilled, the
 	 *             CocoafishError will be threw.
 	 */
-	public CCResponse sendRequest(String url, CCRequestMethod method, Map<String, Object> params, boolean useSecure) throws CocoafishError {
+	public CCResponse sendRequest(String url, CCRequestMethod method, Map<String, Object> data, boolean useSecure) throws CocoafishError {
 		CCResponse response = null;
 
 		try {
@@ -115,11 +115,11 @@ public class Cocoafish {
 			List<NameValuePair> paramsPairs = null; // store all request
 			Map<String, File> fileMap = null; // store the requested file and its parameter name
 
-			if (params != null && !params.isEmpty()) {
-				Iterator<String> it = params.keySet().iterator();
+			if (data != null && !data.isEmpty()) {
+				Iterator<String> it = data.keySet().iterator();
 				while (it.hasNext()) {
 					String name = it.next();
-					Object value = params.get(name);
+					Object value = data.get(name);
 					
 					if (value instanceof String) { 
 						if (paramsPairs == null) 
