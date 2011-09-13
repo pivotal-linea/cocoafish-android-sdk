@@ -367,6 +367,7 @@ public class Cocoafish {
 		if(curApplicationContext != null) {
 			curApplicationContext.getFileStreamPath(CCConstants.COOKIES_FILE).delete();
 		}
+		currentUser = null;
 	}
 
 	public CCUser getCurrentUser() {
