@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.FileNameMap;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -36,6 +37,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URIUtils;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.BasicCookieStore;
@@ -145,20 +148,34 @@ public class Cocoafish {
 				requestUrl.append(CCConstants.KEY);
 				requestUrl.append(appKey);
 			}
-			URL reqURL = new URL(requestUrl.toString());
-
+			
+			if(method == CCRequestMethod.GET || method == CCRequestMethod.DELETE) {
+				if(paramsPairs != null && !paramsPairs.isEmpty()) {
+					String queryString = URLEncodedUtils.format(paramsPairs, CCConstants.ENCODING_UTF8);
+					if(requestUrl.toString().indexOf("?") > 0) {
+						requestUrl.append("&");
+						requestUrl.append(queryString);
+					} else {
+						requestUrl.append("?");
+						requestUrl.append(queryString);
+					}
+				}
+			}
+			
+			URI reqUri = new URL(requestUrl.toString()).toURI();
+			
 			HttpUriRequest request = null;
 			if (method == CCRequestMethod.GET) {
-				request = new HttpGet(reqURL.toURI());
+				request = new HttpGet(reqUri);
 			}
 			if (method == CCRequestMethod.POST) {
-				request = new HttpPost(reqURL.toURI());
+				request = new HttpPost(reqUri);
 			}
 			if (method == CCRequestMethod.PUT) {
-				request = new HttpPut(reqURL.toURI());
+				request = new HttpPut(reqUri);
 			}
 			if (method == CCRequestMethod.DELETE) {
-				request = new HttpDelete(reqURL.toURI());
+				request = new HttpDelete(reqUri);
 			}
 
 			if (request == null)
@@ -191,7 +208,9 @@ public class Cocoafish {
 				}
 			} else {
 				if (paramsPairs != null && !paramsPairs.isEmpty()) {
-					((HttpEntityEnclosingRequestBase) request).setEntity(new UrlEncodedFormEntity(paramsPairs)); 
+					if (request instanceof HttpEntityEnclosingRequestBase) {
+						((HttpEntityEnclosingRequestBase) request).setEntity(new UrlEncodedFormEntity(paramsPairs));
+					}
 				}
 			}
 
