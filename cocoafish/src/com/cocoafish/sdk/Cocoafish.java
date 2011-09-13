@@ -191,11 +191,7 @@ public class Cocoafish {
 				}
 			} else {
 				if (paramsPairs != null && !paramsPairs.isEmpty()) {
-					if (request instanceof HttpEntityEnclosingRequestBase) {
-						if (paramsPairs != null && !paramsPairs.isEmpty()) {
-							((HttpEntityEnclosingRequestBase) request).setEntity(new UrlEncodedFormEntity(paramsPairs)); 
-				    	}
-					}
+					((HttpEntityEnclosingRequestBase) request).setEntity(new UrlEncodedFormEntity(paramsPairs)); 
 				}
 			}
 
