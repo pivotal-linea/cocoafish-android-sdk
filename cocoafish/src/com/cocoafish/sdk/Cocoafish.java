@@ -28,7 +28,6 @@ import oauth.signpost.signature.HmacSha1MessageSigner;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
@@ -37,11 +36,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.utils.URIUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
@@ -49,19 +45,10 @@ import org.apache.http.protocol.HttpContext;
 import org.json.JSONObject;
 
 public class Cocoafish {
-	// private static final String COOKIES_FILE = "CocofishCookiesFile";
-	// private static CookieStore cookieStore = new BasicCookieStore();
-
 	private String appKey = null;
 	private OAuthConsumer consumer = null;
 
 	private HttpClient httpClient = null;
-
-	// private CCRestfulRequest request = null;
-	// private CCUser currentUser;
-	// private Context curApplicationContext;
-	// private Facebook authenticatedFacebook = null;
-	// private DialogListener customFacebookLoginListener = null;
 
 	public Cocoafish(String appKey) {
 		this.appKey = appKey;
@@ -74,21 +61,6 @@ public class Cocoafish {
 		consumer.setSigningStrategy(new AuthorizationHeaderSigningStrategy());
 		httpClient = new DefaultHttpClient();
 	}
-
-	/*
-	 * // private constructor private Cocoafish(String appKey, String
-	 * facebookAppId, Context context) { this.appKey = appKey; request = new
-	 * CCRestfulRequest(this); // this.curApplicationContext = context; // if
-	 * (facebookAppId != null) { // authenticatedFacebook = new
-	 * Facebook(facebookAppId); // } }
-	 * 
-	 * // private constructor private Cocoafish(String consumerKey, String
-	 * consumerSecret, String facebookAppId, Context context) {
-	 * this.oauthConsumerKey = consumerKey; this.oauthConsumerSecret =
-	 * consumerSecret; request = new CCRestfulRequest(this); //
-	 * this.curApplicationContext = context; // if (facebookAppId != null) { //
-	 * authenticatedFacebook = new Facebook(facebookAppId); // } }
-	 */
 
 	/**
 	 * 
@@ -227,8 +199,6 @@ public class Cocoafish {
 			}
 
 			HttpContext localContext = new BasicHttpContext();
-			// localContext.setAttribute(ClientContext.COOKIE_STORE,
-			// cocoafish.getCookieStore());
 			HttpResponse httpResponse = httpClient.execute(request, localContext);
 			HttpEntity entity = httpResponse.getEntity();
 
@@ -236,12 +206,9 @@ public class Cocoafish {
 				// A Simple JSON Response Read
 				InputStream instream = entity.getContent();
 				String result = convertStreamToString(instream);
-				// Log.d(TAG, result);
 
 				// A Simple JSONObject Creation
 				JSONObject jsonObject = new JSONObject(result);
-				// Log.d(TAG, "<jsonobject>\n" + jsonObject.toString() +
-				// "\n</jsonobject>");
 				response = new CCResponse(jsonObject);
 			}
 		} catch (Exception e) {
@@ -276,115 +243,4 @@ public class Cocoafish {
 		}
 		return sb.toString();
 	}
-	
-	/*
-	 * public void facebookAhtorize(Activity activity, String[] permissions,
-	 * final DialogListener customListener) { customFacebookLoginListener =
-	 * customListener; authenticatedFacebook.authorize(activity, permissions,
-	 * new FacebookLoginListener(this)); }
-	 * 
-	 * public Facebook getFacebook() { return authenticatedFacebook; }
-	 */
-
-	/*
-	 * public Context getCurApplicationContext() { return curApplicationContext;
-	 * }
-	 * 
-	 * public void setCurrentUser(CCUser user) { currentUser = user; if (user !=
-	 * null) { saveLoginInfo(); } else { clearLoginInfo(); } }
-	 * 
-	 * public CCUser getCurrentUser() { return currentUser; }
-	 * 
-	 * public CookieStore getCookieStore() { return cookieStore; }
-	 * 
-	 * protected void loadLoginInfo() { try {
-	 * 
-	 * // read the user cookies FileInputStream fis = null; ObjectInputStream in
-	 * = null;
-	 * 
-	 * fis = curApplicationContext.openFileInput(COOKIES_FILE); in = new
-	 * ObjectInputStream(fis);
-	 * 
-	 * currentUser = (CCUser)in.readObject(); int size = in.readInt(); for (int
-	 * i = 0; i < size; i++) { SerializableCookie cookie =
-	 * (SerializableCookie)in.readObject(); cookieStore.addCookie(cookie); }
-	 * 
-	 * } catch (Exception e) { e.printStackTrace(); } }
-	 * 
-	 * // Saving current user name after login and signup protected void
-	 * saveLoginInfo() { // We need an Editor object to make preference changes.
-	 * try { // save the cookies List<Cookie> cookies =
-	 * cookieStore.getCookies(); if (cookies.isEmpty()) { // should not happen
-	 * when we have a current user but no cookies return; } else { final
-	 * List<Cookie> serialisableCookies = new ArrayList<Cookie>(cookies.size());
-	 * for (Cookie cookie : cookies) { serialisableCookies.add(new
-	 * SerializableCookie(cookie)); }
-	 * 
-	 * FileOutputStream fos = null; ObjectOutputStream out = null; try { fos =
-	 * curApplicationContext.openFileOutput(COOKIES_FILE, Context.MODE_PRIVATE);
-	 * out = new ObjectOutputStream(fos); out.writeObject(currentUser);
-	 * out.writeInt(cookies.size()); for (Cookie cookie : serialisableCookies) {
-	 * out.writeObject(cookie); } out.flush(); out.close(); } catch(IOException
-	 * ex) { ex.printStackTrace(); }
-	 * 
-	 * }
-	 * 
-	 * 
-	 * } catch (Exception e) { e.printStackTrace(); } }
-	 * 
-	 * protected void clearLoginInfo() {
-	 * curApplicationContext.getFileStreamPath(COOKIES_FILE).delete(); }
-	 * 
-	 * public class FacebookLoginListener implements DialogListener { private
-	 * Cocoafish cocoafish ; private CCRestfulRequest request ; public
-	 * FacebookLoginListener(Cocoafish cocoafish){ this.cocoafish = cocoafish;
-	 * request = new CCRestfulRequest(this.cocoafish ); }
-	 * 
-	 * public void onComplete(Bundle values) { // login with cocoafish server
-	 * using facebook access token try {
-	 * request.facebookUserLogin(authenticatedFacebook.getAccessToken(),
-	 * authenticatedFacebook.getAppId()); } catch (IOException e) { if
-	 * (customFacebookLoginListener != null) {
-	 * customFacebookLoginListener.onFacebookError(new
-	 * FacebookError(e.getLocalizedMessage())); } } catch (CocoafishError e) {
-	 * if (customFacebookLoginListener != null) {
-	 * customFacebookLoginListener.onFacebookError(new
-	 * FacebookError(e.getLocalizedMessage())); } } if
-	 * (customFacebookLoginListener != null) {
-	 * customFacebookLoginListener.onComplete(values); }
-	 * customFacebookLoginListener = null; }
-	 * 
-	 * public void onCancel() { customFacebookLoginListener = null;
-	 * 
-	 * }
-	 * 
-	 * public void onError(DialogError e) { e.printStackTrace();
-	 * customFacebookLoginListener = null;
-	 * 
-	 * }
-	 * 
-	 * public void onFacebookError(FacebookError e) { e.printStackTrace();
-	 * customFacebookLoginListener = null; } }
-	 * 
-	 * // This method is just used for test, // and it will be delete in the
-	 * final version code. public static void initialize(String appId, String
-	 * facebookAppId, Context applicationContext) { testFish = new
-	 * Cocoafish(appId, facebookAppId, applicationContext);
-	 * 
-	 * }
-	 * 
-	 * // This method is just used for test, // and it will be delete in the
-	 * final version code. public static void initialize(String comsuerKey,
-	 * String comsumerSecret, String facebookAppId, Context applicationContext)
-	 * { testFish = new Cocoafish(comsuerKey, comsumerSecret, facebookAppId,
-	 * applicationContext);
-	 * 
-	 * }
-	 * 
-	 * // This method is just used for test, // and it will be delete in the
-	 * final version code. public static Cocoafish getDefaultInstance() { return
-	 * testFish; }
-	 * 
-	 * public static Cocoafish testFish;
-	 */
 }
