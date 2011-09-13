@@ -2,9 +2,13 @@ package com.cocoafish.sdk;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.FileNameMap;
 import java.net.URI;
 import java.net.URL;
@@ -28,6 +32,7 @@ import oauth.signpost.signature.HmacSha1MessageSigner;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
@@ -36,32 +41,63 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.content.Context;
 
 public class Cocoafish {
 	private String appKey = null;
 	private OAuthConsumer consumer = null;
 
 	private HttpClient httpClient = null;
+	private CookieStore cookieStore = null;
+	private Context curApplicationContext = null;
+	
+	private CCUser currentUser = null;
 
 	public Cocoafish(String appKey) {
+		this(appKey, (Context)null);
+	}
+	
+	public Cocoafish(String consumerKey, String consumerSecret) {
+		this(consumerKey, consumerSecret, (Context)null);
+	}
+	
+	public Cocoafish(String appKey, Context context) {
 		this.appKey = appKey;
-		httpClient = new DefaultHttpClient();
+		curApplicationContext = context;
+		initializeSDK();
 	}
 
-	public Cocoafish(String consumerKey, String consumerSecret) {
+	public Cocoafish(String consumerKey, String consumerSecret, Context context) {
 		consumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
 		consumer.setMessageSigner(new HmacSha1MessageSigner());
 		consumer.setSigningStrategy(new AuthorizationHeaderSigningStrategy());
-		httpClient = new DefaultHttpClient();
+		curApplicationContext = context;
+		initializeSDK();
 	}
-
+	
+	private void initializeSDK() {
+		httpClient = new DefaultHttpClient();
+		cookieStore = new BasicCookieStore();
+		try {
+			loadSessionInfo();
+		} catch (CocoafishError e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * 
 	 * @param url
@@ -199,6 +235,8 @@ public class Cocoafish {
 			}
 
 			HttpContext localContext = new BasicHttpContext();
+			localContext.setAttribute(ClientContext.COOKIE_STORE, getCookieStore());
+			
 			HttpResponse httpResponse = httpClient.execute(request, localContext);
 			HttpEntity entity = httpResponse.getEntity();
 
@@ -210,6 +248,7 @@ public class Cocoafish {
 				// A Simple JSONObject Creation
 				JSONObject jsonObject = new JSONObject(result);
 				response = new CCResponse(jsonObject);
+				updateSessionInfo(response);
 			}
 		} catch (Exception e) {
 			throw new CocoafishError(e.getLocalizedMessage());
@@ -242,5 +281,95 @@ public class Cocoafish {
 			}
 		}
 		return sb.toString();
+	}
+
+	private void updateSessionInfo(CCResponse response) throws CocoafishError {
+		if(response != null && response.getMeta() != null) {
+			CCMeta meta = response.getMeta();
+			if(meta.getCode() == CCConstants.SUCCESS_CODE) {
+				if(CCConstants.LOGIN_METHOD.equals(meta.getMethod()) 
+						|| CCConstants.CREATE_METHOD.equals(meta.getMethod())) {
+					try {
+						if(response.getResponseData() != null) {
+							JSONArray array = response.getResponseData().getJSONArray(CCConstants.USERS);
+							if(array != null && array.length() > 0) {
+								currentUser = new CCUser(array.getJSONObject(0));
+								saveSessionInfo();
+							}
+						}
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+				} else if(CCConstants.LOGOUT_METHOD.equals(meta.getMethod())) {
+					clearSessionInfo();
+				}
+			}
+		}
+	}
+	
+	private CookieStore getCookieStore() { 
+		return cookieStore; 
+	}
+
+	private void loadSessionInfo() throws CocoafishError {
+		if(curApplicationContext != null) {
+			try {
+				// read the user cookies
+				FileInputStream fis = curApplicationContext.openFileInput(CCConstants.COOKIES_FILE);
+				ObjectInputStream in = new ObjectInputStream(fis);
+				currentUser = (CCUser)in.readObject();
+				int size = in.readInt();
+				for (int i = 0; i < size; i++) {
+					SerializableCookie cookie = (SerializableCookie)in.readObject();
+					cookieStore.addCookie(cookie);
+				}
+			} catch (Exception e) {
+				throw new CocoafishError(e.getLocalizedMessage());
+			}
+		}
+	}
+
+	protected void saveSessionInfo() throws CocoafishError {
+		if(curApplicationContext != null) {
+			try {
+				// save the cookies
+				List<Cookie> cookies = cookieStore.getCookies();
+				if (cookies.isEmpty()) {
+					// should not happen when we have a current user but no cookies
+					return;
+				} else {
+					final List<Cookie> serialisableCookies = new ArrayList<Cookie>(cookies.size());
+					for (Cookie cookie : cookies) {
+						serialisableCookies.add(new SerializableCookie(cookie));
+					}
+					try {                  
+						FileOutputStream fos = curApplicationContext.openFileOutput(CCConstants.COOKIES_FILE, Context.MODE_PRIVATE);
+						ObjectOutputStream out = new ObjectOutputStream(fos);
+						out.writeObject(currentUser);
+						out.writeInt(cookies.size());
+						for (Cookie cookie : serialisableCookies) {
+							out.writeObject(cookie);
+						}
+						out.flush();
+						out.close();
+					}
+					catch(IOException ex) {
+						throw new CocoafishError(ex.getLocalizedMessage());
+					}
+				}
+			} catch (Exception e) {
+				throw new CocoafishError(e.getLocalizedMessage());
+			}
+		}
+	}
+
+	protected void clearSessionInfo() {
+		if(curApplicationContext != null) {
+			curApplicationContext.getFileStreamPath(CCConstants.COOKIES_FILE).delete();
+		}
+	}
+
+	public CCUser getCurrentUser() {
+		return currentUser;
 	}
 }
