@@ -36,17 +36,11 @@ public class DemoApplication extends Application {
         PreferenceManager.setDefaultValues(this, R.xml.default_values, false);
         
         // initialize Cocoafish
-        initialize(APP_COMSUMER_KEY, APP_COMSUMER_SECRET);
-
-        TestDriver td = new TestDriver(getSdk());
-        
-        td.testSDK();
-        
-        System.out.println("passed");
+        initialize(APP_COMSUMER_KEY, APP_COMSUMER_SECRET, getApplicationContext());
     }
 
-    private static void initialize(String appComsumerKey, String appComsumerSecret ) {
-		sdk = new Cocoafish(appComsumerKey, appComsumerSecret);
+    private static void initialize(String appComsumerKey, String appComsumerSecret, Context appContext ) {
+		sdk = new Cocoafish(appComsumerKey, appComsumerSecret, appContext);
 		session = new DemoSession();
 		
 	}

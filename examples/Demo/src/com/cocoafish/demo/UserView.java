@@ -1,12 +1,7 @@
 package com.cocoafish.demo;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -21,9 +16,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.cocoafish.sdk.CCConstants;
 import com.cocoafish.sdk.CCMeta;
 import com.cocoafish.sdk.CCRequestMethod;
 import com.cocoafish.sdk.CCResponse;
+import com.cocoafish.sdk.CCUser;
 import com.cocoafish.sdk.Cocoafish;
 import com.cocoafish.sdk.CocoafishError;
 
@@ -40,7 +37,7 @@ public class UserView extends Activity {
         sdk = DemoApplication.getSdk();
         session = DemoApplication.getSession();
         try {
-			if ( session.getAttribute("User") == null) {
+			if ( sdk.getCurrentUser() == null) {
 				showLoginView();
 			} else {
             	showUserView();
@@ -76,19 +73,12 @@ public class UserView extends Activity {
 	    	dataMap.put("password", password);
 	    	CCResponse response = sdk.sendRequest("users/login.json", CCRequestMethod.POST, dataMap, false);
 	    	CCMeta meta = response.getMeta();
-	    	if( !"OK".equals( meta.getStatus() ) )
+	    	if( meta.getCode() != CCConstants.SUCCESS_CODE )
 	    			throw new CocoafishError(meta.getMessage());
-	    	
-	    	JSONObject responseJSON = response.getResponseData();
-	    	JSONArray usersArr = responseJSON.getJSONArray("users");
-	    	JSONObject userInfo = usersArr.getJSONObject(0);
-	    	session.setAttribute("User", userInfo);
 	    	
 	    	showUserView();
 		} catch (CocoafishError e) {
 			errorMsg = e.getMessage();
-    	} catch (JSONException e) {
-    		errorMsg = e.getMessage();
     	} 
 		dialog.dismiss();
 		
@@ -167,8 +157,9 @@ public class UserView extends Activity {
        
         try {
             TextView name = (TextView)findViewById(R.id.UserName);
-            JSONObject userInfo = (JSONObject) session.getAttribute("User");
-            name.setText( userInfo.getString("first_name") + " " + userInfo.getString("last_user") );
+            CCUser user = sdk.getCurrentUser();
+            if( user != null)
+            	name.setText( user.getFirst() + " " + user.getLast() );
         } catch (Exception e) {
 			e.printStackTrace();
         }
