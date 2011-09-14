@@ -56,7 +56,6 @@ public class UserView extends Activity {
     	inputManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 
     			InputMethodManager.HIDE_IMPLICIT_ONLY); 
     	inputManager.toggleSoftInput(0, 0);
-
     }
     
     protected void performLogin() {

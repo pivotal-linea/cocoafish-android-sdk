@@ -114,6 +114,7 @@ public class PlaceView extends Activity {
 	private class GetCheckinsTask extends AsyncTask<Void, Void, List<CCResponse>> {
 		private final ProgressDialog dialog = new ProgressDialog(PlaceView.this);
 	    private String errorMsg = null;
+	    
 	    protected void onPreExecute()
 	    {
 	        dialog.setMessage("Loading...");

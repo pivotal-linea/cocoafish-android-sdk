@@ -3,7 +3,8 @@ package com.cocoafish.demo;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cocoafish.sdk.CCResponse;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -13,16 +14,18 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.cocoafish.sdk.CCResponse;
+
 // Adapter to show a list of checkins
 public class PlaceAdapter extends BaseAdapter  {
     private Context context;
-    private List<CCResponse> listPlace = new ArrayList<CCResponse>();
+    private List<JSONObject> listPlace = new ArrayList<JSONObject>();
 
     public PlaceAdapter(Context context) {
         this.context = context;
     }
     
-    public void setPlaces(List<CCResponse> places) {
+    public void setPlaces(List<JSONObject> places) {
     	this.listPlace=places;
         notifyDataSetChanged();
     }
@@ -40,7 +43,7 @@ public class PlaceAdapter extends BaseAdapter  {
     }
 
     public View getView(int position, View convertView, ViewGroup viewGroup) {
-        CCResponse entry = listPlace.get(position);
+    	JSONObject entry = listPlace.get(position);
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -50,11 +53,19 @@ public class PlaceAdapter extends BaseAdapter  {
         }
         TextView placeName = (TextView) convertView.findViewById(R.id.placeName);
         placeName.setTextColor(Color.BLACK);
-        //placeName.setText(entry.getName());
+        try {
+			placeName.setText(entry.getString("name"));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
        
         TextView placeAddress = (TextView) convertView.findViewById(R.id.placeAddress);
         placeAddress.setTextColor(Color.BLACK);
-        //placeAddress.setText(entry.getFullAddress());
+        try {
+			placeAddress.setText(entry.getString("address"));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 
         return convertView;
     }

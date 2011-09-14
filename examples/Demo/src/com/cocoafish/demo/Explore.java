@@ -1,15 +1,20 @@
 
 package com.cocoafish.demo;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-
 import android.graphics.Canvas;
 import android.graphics.Color;
-
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,6 +27,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.cocoafish.sdk.CCRequestMethod;
 import com.cocoafish.sdk.CCResponse;
 import com.cocoafish.sdk.Cocoafish;
 import com.cocoafish.sdk.CocoafishError;
@@ -32,21 +38,20 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.OverlayItem;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 public class Explore extends MapActivity {
 	private MapView map=null;
 	private MyLocationOverlay me=null;
-	private List<CCResponse> places;
+	private List<JSONObject> places;
 	private SitesOverlay overlay;
 	private BaloonLayout noteBaloon;
+	private Cocoafish sdk;
     
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		
+		sdk = DemoApplication.getSdk();
 		
 		map=(MapView)findViewById(R.id.map);
 		
@@ -88,7 +93,7 @@ public class Explore extends MapActivity {
 
 			   	    list.setSelection(position);
 
-		    	 	CCResponse place = (CCResponse) list.getItemAtPosition(position);
+			   	    JSONObject place = (JSONObject) list.getItemAtPosition(position);
 
 		    	    Intent myIntent = new Intent(getBaseContext(), PlaceView.class);
 		    	    myIntent.putExtra("place", (Parcelable)place);
@@ -180,14 +185,14 @@ public class Explore extends MapActivity {
 	    map.setEnabled(true);
 	}
 	
-	public void setPlaces(List<CCResponse> newPlaces) {
+	public void setPlaces(List<JSONObject> newPlaces) {
 		places = newPlaces;
 		overlay.update();
 		ListView list = (ListView) findViewById(R.id.placeList);
 	    ((PlaceAdapter)list.getAdapter()).setPlaces(places);
 	}
 	
-	private class GetPlacesTask extends AsyncTask<Void, Void, List<CCResponse>> {
+	private class GetPlacesTask extends AsyncTask<Void, Void, List<JSONObject>> {
 
 	    private final ProgressDialog dialog = new ProgressDialog(Explore.this);
 	    private String errorMsg = null;
@@ -196,7 +201,7 @@ public class Explore extends MapActivity {
 	        dialog.setMessage("Loading...");
 	        dialog.show();
 	    }
-	     protected void onPostExecute(List<CCResponse> places) {
+	     protected void onPostExecute(List<JSONObject> places) {
 	      
 	    	 if(this.dialog.isShowing())
 	         {
@@ -221,19 +226,22 @@ public class Explore extends MapActivity {
 	     }
 
 		@Override
-		protected List<CCResponse> doInBackground(Void...params) {
-			/*CCRestfulRequest request = null;
-			List<CCResponse> places = null;
+		protected List<JSONObject> doInBackground(Void...params) {
+			List<JSONObject> places = new ArrayList<JSONObject>();
+			CCResponse  result = null;
 			try {
-				request = new CCRestfulRequest(DemoApplication.getSdk());
-				places = request.getPlaces(CCRestfulRequest.FIRST_PAGE, CCRestfulRequest.DEFAULT_PER_PAGE);
+				result = sdk.sendRequest("places/search.json", CCRequestMethod.GET, null, false);
+				JSONObject resJson = result.getResponseData();
+				JSONArray array = resJson.getJSONArray("places");
+				for( int i = 0 ; i < array.length() ; i++ ){
+					places.add( array.getJSONObject(i) );
+				}
 			} catch (CocoafishError e) {
 				errorMsg = e.getLocalizedMessage();
-			} catch (IOException e) {
-				errorMsg = "Network Error: " + e.getLocalizedMessage();
+			} catch (JSONException e) {
+				e.printStackTrace();
 			}
-			return places;*/
-			return null;
+			return places;
 		}
 		
 	}
@@ -241,7 +249,7 @@ public class Explore extends MapActivity {
 	private class SitesOverlay extends ItemizedOverlay<OverlayItem> {
 		private List<OverlayItem> items=new ArrayList<OverlayItem>();
 		private Drawable marker=null;
-		private CCResponse selectedPlace = null;
+		private JSONObject selectedPlace = null;
 	    private void fitPoints() {
 	    	
 	    	if (places == null || places.size() == 0) {
@@ -254,11 +262,15 @@ public class Explore extends MapActivity {
 	    	int seLng = -180 * 1000000;  
 	    	// find bounding lats and lngs  
 
-	    	for (CCResponse place : places) {
-	    		/*nwLat = Math.max(nwLat, (int)(place.getLatitude() * 1000000));
-	    		nwLng = Math.min(nwLng, (int)(place.getLongitude() * 1000000));
-	    		seLat = Math.min(seLat, (int)(place.getLatitude() * 1000000));
-	    		seLng = Math.max(seLng, (int)(place.getLongitude() * 1000000));*/
+	    	for (JSONObject place : places) {
+	    		try {
+					nwLat = Math.max(nwLat, (int)(place.getDouble("latitude") * 1000000));
+		    		nwLng = Math.min(nwLng, (int)(place.getDouble("longitude") * 1000000));
+		    		seLat = Math.min(seLat, (int)(place.getDouble("latitude") * 1000000));
+		    		seLng = Math.max(seLng, (int)(place.getDouble("longitude") * 1000000));
+				}catch (JSONException e) {
+					e.printStackTrace();
+				} 
 	    	}
 	    	GeoPoint center = new GeoPoint((nwLat + seLat) / 2, (nwLng + seLng) / 2);  
 	    	// add padding in each direction  
@@ -285,9 +297,13 @@ public class Explore extends MapActivity {
 			if (places == null) {
 				return;
 			}
-			for (CCResponse place : places) {
-				//items.add(new OverlayItem(getPoint(place.getLatitude(), place.getLongitude()),
-				//		place.getName(), place.getAddress()));
+			for (JSONObject place : places) {
+				try {
+					items.add(new OverlayItem(getPoint(place.getDouble("latitude"), place.getDouble("longitude")),
+							place.getString("name"), place.getString("address")));
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
 	    	}
 			populate();
 			fitPoints();
@@ -312,7 +328,7 @@ public class Explore extends MapActivity {
 			OverlayItem item=getItem(i);
 			GeoPoint geo=item.getPoint();
 
-			CCResponse place= places.get(i);
+			JSONObject place= places.get(i);
 			if (selectedPlace == place) {
 				// user tapped on the same pin again, this will remove the baloon
 				map.removeView(noteBaloon);
@@ -324,8 +340,16 @@ public class Explore extends MapActivity {
 			map.removeView(noteBaloon);
 			map.getController().animateTo(geo);
 			
-			//((TextView)noteBaloon.findViewById(R.id.placeName)).setText(place.getName());
-			//((TextView)noteBaloon.findViewById(R.id.placeAddress)).setText(place.getFullAddress());
+			try {
+				((TextView)noteBaloon.findViewById(R.id.placeName)).setText(place.getString("name"));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			try {
+				((TextView)noteBaloon.findViewById(R.id.placeAddress)).setText(place.getString("address"));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 			map.addView(noteBaloon, new MapView.LayoutParams(MapView.LayoutParams.WRAP_CONTENT,70,geo,MapView.LayoutParams.BOTTOM_CENTER));
 			
 			return(true);
