@@ -315,13 +315,16 @@ public class Cocoafish {
 		if(curApplicationContext != null) {
 			try {
 				// read the user cookies
-				FileInputStream fis = curApplicationContext.openFileInput(CCConstants.COOKIES_FILE);
-				ObjectInputStream in = new ObjectInputStream(fis);
-				currentUser = (CCUser)in.readObject();
-				int size = in.readInt();
-				for (int i = 0; i < size; i++) {
-					SerializableCookie cookie = (SerializableCookie)in.readObject();
-					cookieStore.addCookie(cookie);
+				File cookiesFile = curApplicationContext.getFileStreamPath(CCConstants.COOKIES_FILE);
+				if(cookiesFile.exists()) {
+					FileInputStream fis = curApplicationContext.openFileInput(CCConstants.COOKIES_FILE);
+					ObjectInputStream in = new ObjectInputStream(fis);
+					currentUser = (CCUser)in.readObject();
+					int size = in.readInt();
+					for (int i = 0; i < size; i++) {
+						SerializableCookie cookie = (SerializableCookie)in.readObject();
+						cookieStore.addCookie(cookie);
+					}
 				}
 			} catch (Exception e) {
 				throw new CocoafishError(e.getLocalizedMessage());
