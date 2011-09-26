@@ -2,7 +2,8 @@ package com.cocoafish.demo;
 
 import java.util.List;
 
-import com.cocoafish.sdk.CCResponse;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,13 +12,15 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.cocoafish.sdk.CCResponse;
+
 // Adapter to show a list of checkins
 public class CheckinAdapter extends BaseAdapter {
     private Context context;
     private boolean isPlaceView;
-    private List<CCResponse> listCheckin;
+    private List<JSONObject> listCheckin;
 
-    public CheckinAdapter(Context context, List<CCResponse> listCheckin, boolean isPlaceView) {
+    public CheckinAdapter(Context context, List<JSONObject> listCheckin, boolean isPlaceView) {
         this.context = context;
         this.listCheckin = listCheckin;
         this.isPlaceView = isPlaceView;
@@ -36,7 +39,7 @@ public class CheckinAdapter extends BaseAdapter {
     }
 
     public View getView(int position, View convertView, ViewGroup viewGroup) {
-        CCResponse entry = listCheckin.get(position);
+    	JSONObject entry = listCheckin.get(position);
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -44,13 +47,27 @@ public class CheckinAdapter extends BaseAdapter {
         }
         TextView checkinInfo = (TextView) convertView.findViewById(R.id.checkinInfo);
         if (isPlaceView) {
-        	//checkinInfo.setText(entry.getUser().getFirst() + " checked in");
+			try {
+				JSONObject userJSON = userJSON = entry.getJSONObject("user");
+				checkinInfo.setText( userJSON.getString("first_name") + " checked in");
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
         } else {
-        	//checkinInfo.setText("Checked in at " + entry.getPlace().getName());
+        	try {
+				JSONObject placeJSON = entry.getJSONObject("place");
+				checkinInfo.setText("Checked in at " + placeJSON.getString("name") );
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
         }
 
         TextView checkinDate = (TextView) convertView.findViewById(R.id.checkinDate);
-        //checkinDate.setText(entry.getCreatedDate().toString());
+        try {
+			checkinDate.setText(entry.getString("created_at"));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 
         return convertView;
     }

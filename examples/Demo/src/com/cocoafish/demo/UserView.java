@@ -1,7 +1,13 @@
 package com.cocoafish.demo;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -27,15 +33,13 @@ import com.cocoafish.sdk.CocoafishError;
 public class UserView extends Activity {
 
     static final int LAUNCH_SIGNUP = 0;
-    List<CCResponse> listOfCheckin;
+//    List<CCResponse> listOfCheckin;
     private Cocoafish sdk;
-    private DemoSession session;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         sdk = DemoApplication.getSdk();
-        session = DemoApplication.getSession();
         try {
 			if ( sdk.getCurrentUser() == null) {
 				showLoginView();
@@ -102,9 +106,7 @@ public class UserView extends Activity {
     
     protected void performLogout() {
 	    try {
-			CCResponse response = sdk.sendRequest("users/logout.json", CCRequestMethod.GET, null, false);
-			
-			session.setAttribute("User", null);	
+			sdk.sendRequest("users/logout.json", CCRequestMethod.GET, null, false);
 		} catch (CocoafishError e) {
 			e.printStackTrace();
 		}
@@ -165,7 +167,7 @@ public class UserView extends Activity {
         performRefresh();
     }
   
-    protected void showCheckins(List<CCResponse> checkins) {
+    protected void showCheckins(List<JSONObject> checkins) {
         
     	if (checkins == null) {
     		return;
@@ -180,7 +182,7 @@ public class UserView extends Activity {
         list.setAdapter(adapter);
     }
     
-	private class GetCheckinsTask extends AsyncTask<Void, Void, List<CCResponse>> {
+	private class GetCheckinsTask extends AsyncTask<Void, Void, List<JSONObject>> {
 		private final ProgressDialog dialog = new ProgressDialog(UserView.this);
 	    private String errorMsg = null;
 	    protected void onPreExecute()
@@ -189,7 +191,7 @@ public class UserView extends Activity {
 	        dialog.show();
 	    }
 	    
-	    protected void onPostExecute(List<CCResponse> checkins) {
+	    protected void onPostExecute(List<JSONObject> checkins) {
 	    	 if(this.dialog.isShowing())
 	         {
 	             this.dialog.dismiss();
@@ -212,20 +214,29 @@ public class UserView extends Activity {
 	    }
 
 		@Override
-		protected List<CCResponse> doInBackground(Void...params) {
-			/*CCRestfulRequest request = null;
-			List<CCResponse> checkins = null;
+		protected List<JSONObject> doInBackground(Void...params) {
+			List<JSONObject> checkinsList = new ArrayList<JSONObject>();
 			try {
-				request = new CCRestfulRequest(DemoApplication.getSdk());
-				checkins = request.getCheckinsForUser(DemoApplication.getSdk().getCurrentUser().getObjectId(), 
-								CCRestfulRequest.FIRST_PAGE, CCRestfulRequest.DEFAULT_PER_PAGE);
+				Map<String, Object> data = new HashMap<String, Object>();
+				data.put("user_id", sdk.getCurrentUser().getObjectId() );
+				CCResponse response = sdk.sendRequest("checkins/search.json", CCRequestMethod.GET, data, false);
+
+
+				JSONObject responseJSON = response.getResponseData();
+				CCMeta meta = response.getMeta();
+				if("ok".equals(meta.getStatus()) 
+				    && meta.getCode() == 200 
+				    && "searchCheckins".equals(meta.getMethod())) {
+				  try {
+					JSONArray checkins = responseJSON.getJSONArray("checkins");
+					for( int i = 0 ; i < checkins.length() ; i++ )
+						checkinsList.add(checkins.getJSONObject(i) );
+				  } catch (JSONException e) { }
+				}
 			} catch (CocoafishError e) {
 				errorMsg = e.getLocalizedMessage();
-			} catch (IOException e) {
-				errorMsg = e.getLocalizedMessage();
-			}
-			return checkins;*/
-			return null;
+			} 
+			return checkinsList;
 		}
 	}
 

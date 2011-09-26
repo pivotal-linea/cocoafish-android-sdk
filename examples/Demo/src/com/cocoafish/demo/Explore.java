@@ -96,7 +96,7 @@ public class Explore extends MapActivity {
 			   	    JSONObject place = (JSONObject) list.getItemAtPosition(position);
 
 		    	    Intent myIntent = new Intent(getBaseContext(), PlaceView.class);
-		    	    myIntent.putExtra("place", (Parcelable)place);
+		    	    myIntent.putExtra("place", place.toString());
 		    	    startActivity(myIntent);
 		      }
 	    });
@@ -366,7 +366,7 @@ public class Explore extends MapActivity {
 				return;
 			}
 			Intent myIntent = new Intent(getBaseContext(), PlaceView.class);
-		    myIntent.putExtra("place", (Parcelable)selectedPlace);
+		    myIntent.putExtra("place", selectedPlace.toString());
 		    startActivity(myIntent);
 		}
 	}
