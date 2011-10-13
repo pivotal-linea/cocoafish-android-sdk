@@ -1,7 +1,9 @@
 package com.cocoafish.demo;
 
 import android.app.Application;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.preference.PreferenceManager;
 
 import com.cocoafish.sdk.Cocoafish;
@@ -37,6 +39,11 @@ public class DemoApplication extends Application {
         
         // initialize Cocoafish
         initialize(APP_COMSUMER_KEY, APP_COMSUMER_SECRET, getApplicationContext());
+        
+        // Apply for a registration_id from c2dm server.
+        // The registration_id should be stored in cocoafish's server,
+        // afterwards, cocoafish can send push notification to this program.
+        //register4C2DM();
     }
 
     private static void initialize(String appComsumerKey, String appComsumerSecret, Context appContext ) {
@@ -55,4 +62,16 @@ public class DemoApplication extends Application {
     public static DemoSession getSession() {
 		return session;
 	}
+    
+    /*
+	 * Implementing the C2DM push notification feature.
+	 */
+	public void register4C2DM()
+	{
+		Intent registrationIntent = new Intent("com.google.android.c2dm.intent.REGISTER");
+		registrationIntent.putExtra("app", PendingIntent.getBroadcast(this, 0, new Intent(), 0)); // boilerplate
+		registrationIntent.putExtra("sender", "jerry@cocoafish.com");
+		startService(registrationIntent);
+	}
+
 }
