@@ -69,6 +69,8 @@ public class SignUp extends Activity {
 		} catch (CocoafishError e) {
 			errorMsg = e.getMessage();
 			
+		} catch (IOException e) {
+			e.printStackTrace();
 		} 
 		dialog.dismiss();
 		

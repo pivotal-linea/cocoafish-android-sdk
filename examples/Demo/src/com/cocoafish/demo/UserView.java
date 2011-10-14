@@ -1,5 +1,6 @@
 package com.cocoafish.demo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,13 +10,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.accounts.Account;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Config;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -82,7 +89,9 @@ public class UserView extends Activity {
 	    	showUserView();
 		} catch (CocoafishError e) {
 			errorMsg = e.getMessage();
-    	} 
+    	} catch (IOException e) {
+			e.printStackTrace();
+		} 
 		dialog.dismiss();
 		
 		if (errorMsg != null) {
@@ -108,6 +117,8 @@ public class UserView extends Activity {
 	    try {
 			sdk.sendRequest("users/logout.json", CCRequestMethod.GET, null, false);
 		} catch (CocoafishError e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		showLoginView();
@@ -235,9 +246,14 @@ public class UserView extends Activity {
 				}
 			} catch (CocoafishError e) {
 				errorMsg = e.getLocalizedMessage();
+			} catch (IOException e) {
+				e.printStackTrace();
 			} 
 			return checkinsList;
 		}
 	}
 
+	
+	
+	
 }

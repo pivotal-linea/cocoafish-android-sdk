@@ -1,6 +1,7 @@
 
 package com.cocoafish.demo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -239,6 +240,8 @@ public class Explore extends MapActivity {
 			} catch (CocoafishError e) {
 				errorMsg = e.getLocalizedMessage();
 			} catch (JSONException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			return places;

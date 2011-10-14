@@ -1,5 +1,6 @@
 package com.cocoafish.demo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -116,6 +117,8 @@ public class PlaceView extends Activity {
 
 		} catch (CocoafishError e) {
 			errorMsg = e.getMessage();
+		} catch (IOException e) {
+			e.printStackTrace();
 		} 
 		
 		if (errorMsg != null) {
@@ -198,6 +201,8 @@ public class PlaceView extends Activity {
 			} catch (CocoafishError e) {
 				e.printStackTrace();
 			} catch (JSONException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
 				e.printStackTrace();
 			} 
 			return checkins;

@@ -1,6 +1,7 @@
 package com.cocoafish.test;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -33,16 +34,19 @@ public class TestDriver {
 	private static final String USER_LASTNAME = "last_name";
 	private static final String USER_ROLE = "role";
 	private static final String USER_LOGIN = "login";
+	private static final String ADDRESS = "address";
+	private static final String CITY = "city";
+	private static final String NAME = "name";
+	private static final String PER_PAGE = "per_page";
+	private static final String PLACE_ID = "place_id";
 	
 	private static final String URL_CREATE_USER = "users/create.json";
 	private static final String URL_LOGIN_USER = "users/login.json";
 	private static final String URL_UPDATE_USER = "users/update.json";
 	private static final String URL_LOGOUT_USER = "users/logout.json";
-	
-	private static final String METHOD_POST = "POST";
-	private static final String METHOD_GET = "GET";
-	private static final String METHOD_PUT = "PUT";
-	private static final String METHOD_DELETE = "DELETE";
+	private static final String URL_SEARCH_PLACES = "places/search.json";
+	private static final String URL_CREATE_PLACE = "places/create.json";
+	private static final String URL_DELETE_PLACE = "places/delete.json";
 	
 	/**
 	 * @param args
@@ -74,14 +78,14 @@ public class TestDriver {
 	}
 	
 	public void testSDK(){
-		createUser("test" + new Date().getTime(), false);
-		createUser("test" + new Date().getTime(), true);
 		
-		loginUser("dongjerry355", "Pass1234");
-		updateUser();
-		logoutUser();
-		int stop;
+		loginUser("jerrydong355", "Pass1234");
+		deletePlace();
+		//searchPlaces();
 		//updateUser();
+		logoutUser();
+		int stop = 0;
+		stop++;
 	}
 	
 	public void loginUser(String username, String password){
@@ -90,28 +94,34 @@ public class TestDriver {
 		dataMap.put(USER_PASSWORD, password);
 		
 		try {
-			CCResponse response = sdk.sendRequest( URL_LOGIN_USER, CCRequestMethod.POST, dataMap, false);
+			CCResponse response = sdk.sendRequest( URL_LOGIN_USER, CCRequestMethod.POST, dataMap, isSecure);
 			System.out.println(response);
 		} catch (CocoafishError e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	public void logoutUser(){
 		try {
-			CCResponse response = sdk.sendRequest( URL_LOGOUT_USER, CCRequestMethod.GET, null, false);
+			CCResponse response = sdk.sendRequest( URL_LOGOUT_USER, CCRequestMethod.GET, null, isSecure);
 		} catch (CocoafishError e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	public void updateUser(){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		dataMap.put(USER_FIRSTNAME, "Jerry_updated2");
-		dataMap.put(USER_LASTNAME, "Dong_updated2");
+		dataMap.put(USER_FIRSTNAME, "Jerry_updated_09130918");
+		dataMap.put(USER_LASTNAME, "Dong_updated_09130918");
 		try {
-			CCResponse response = sdk.sendRequest( URL_UPDATE_USER, CCRequestMethod.PUT, dataMap, false);
+			CCResponse response = sdk.sendRequest( URL_UPDATE_USER, CCRequestMethod.PUT, dataMap, isSecure);
 		}  catch (CocoafishError e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -132,11 +142,52 @@ public class TestDriver {
 			dataMap.put("photo", photo);
 		}
 		try {
-			CCResponse response = sdk.sendRequest( URL_CREATE_USER, CCRequestMethod.POST, dataMap, false);
+			CCResponse response = sdk.sendRequest( URL_CREATE_USER, CCRequestMethod.POST, dataMap, isSecure);
 		} catch (CocoafishError e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void searchPlaces(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		dataMap.put(PER_PAGE, "3");
+		try {
+			CCResponse response = sdk.sendRequest( URL_SEARCH_PLACES, CCRequestMethod.GET, dataMap, isSecure);
+		}  catch (CocoafishError e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void createPlace(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		dataMap.put(NAME, "place created by TestDriver");
+		dataMap.put(ADDRESS, "598 Haight Street");
+		dataMap.put(CITY, "San Francisco");
+		try {
+			CCResponse response = sdk.sendRequest( URL_CREATE_PLACE, CCRequestMethod.POST, dataMap, isSecure);
+		}  catch (CocoafishError e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void deletePlace(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		dataMap.put(PLACE_ID, "4e6ecbd36f70954271000f00");
+		try {
+			CCResponse response = sdk.sendRequest( URL_DELETE_PLACE, CCRequestMethod.DELETE, dataMap, isSecure);
+		}  catch (CocoafishError e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	private Cocoafish sdk;
+	private boolean isSecure = false;
 }

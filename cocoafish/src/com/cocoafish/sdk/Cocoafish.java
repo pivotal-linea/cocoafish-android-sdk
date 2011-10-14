@@ -11,6 +11,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.FileNameMap;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -57,6 +58,7 @@ import org.json.JSONObject;
 import android.content.Context;
 
 public class Cocoafish {
+	private String hostname = null;
 	private String appKey = null;
 	private OAuthConsumer consumer = null;
 
@@ -75,19 +77,36 @@ public class Cocoafish {
 	}
 	
 	public Cocoafish(String appKey, Context context) {
+		this(appKey, context, null);
+	}
+	
+	public Cocoafish(String appKey, Context context, String hostname) {
 		this.appKey = appKey;
 		curApplicationContext = context;
+		if(hostname != null && hostname.trim().length() > 0)
+			this.hostname = hostname;
+		else
+			this.hostname = CCConstants.DEFAULT_HOSTNAME;
+		
 		initializeSDK();
 	}
 
 	public Cocoafish(String consumerKey, String consumerSecret, Context context) {
+		this(consumerKey, consumerSecret, context, null);
+	}
+	
+	public Cocoafish(String consumerKey, String consumerSecret, Context context, String hostname) {
 		consumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
 		consumer.setMessageSigner(new HmacSha1MessageSigner());
 		consumer.setSigningStrategy(new AuthorizationHeaderSigningStrategy());
 		curApplicationContext = context;
+		if(hostname != null && hostname.trim().length() > 0)
+			this.hostname = hostname;
+		else
+			this.hostname = CCConstants.DEFAULT_HOSTNAME;
+		
 		initializeSDK();
 	}
-	
 	private void initializeSDK() {
 		httpClient = new DefaultHttpClient();
 		cookieStore = new BasicCookieStore();
@@ -118,10 +137,10 @@ public class Cocoafish {
 	 *             If other problems cause the request cannot be fulfilled, the
 	 *             CocoafishError will be threw.
 	 */
-	public CCResponse sendRequest(String url, CCRequestMethod method, Map<String, Object> data, boolean useSecure) throws CocoafishError {
+	public CCResponse sendRequest(String url, CCRequestMethod method, Map<String, Object> data, boolean useSecure) throws CocoafishError, IOException {
 		CCResponse response = null;
 
-		try {
+	
 			// parameters
 			List<NameValuePair> paramsPairs = null; // store all request
 			Map<String, File> fileMap = null; // store the requested file and its parameter name
@@ -146,9 +165,9 @@ public class Cocoafish {
 
 			StringBuffer requestUrl = null;
 			if (useSecure) {
-				requestUrl = new StringBuffer(CCConstants.BASE_URL_SECURE);
+				requestUrl = new StringBuffer(CCConstants.HTTP_HEAD + hostname);
 			} else {
-				requestUrl = new StringBuffer(CCConstants.BASE_URL);
+				requestUrl = new StringBuffer(CCConstants.HTTPS_HEAD + hostname);
 			}
 			requestUrl.append(url);
 
@@ -170,7 +189,12 @@ public class Cocoafish {
 				}
 			}
 			
-			URI reqUri = new URL(requestUrl.toString()).toURI();
+			URI reqUri;
+			try {
+				reqUri = new URL(requestUrl.toString()).toURI();
+			} catch (URISyntaxException e1) {
+				throw new CocoafishError("Internal error occured.");
+			}
 			
 			HttpUriRequest request = null;
 			if (method == CCRequestMethod.GET) {
@@ -246,13 +270,16 @@ public class Cocoafish {
 				String result = convertStreamToString(instream);
 
 				// A Simple JSONObject Creation
-				JSONObject jsonObject = new JSONObject(result);
+				JSONObject jsonObject;
+				try {
+					jsonObject = new JSONObject(result);
+				} catch (JSONException e) {
+					throw new CocoafishError(e.getLocalizedMessage());
+				}
 				response = new CCResponse(jsonObject);
 				updateSessionInfo(response);
 			}
-		} catch (Exception e) {
-			throw new CocoafishError(e.getLocalizedMessage());
-		}
+		 
 		return response;
 	}
 
@@ -375,5 +402,13 @@ public class Cocoafish {
 
 	public CCUser getCurrentUser() {
 		return currentUser;
+	}
+
+	public String getHostname() {
+		return hostname;
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
 	}
 }
