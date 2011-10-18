@@ -165,9 +165,9 @@ public class Cocoafish {
 
 			StringBuffer requestUrl = null;
 			if (useSecure) {
-				requestUrl = new StringBuffer(CCConstants.HTTP_HEAD + hostname);
+                requestUrl = new StringBuffer(CCConstants.HTTPS_HEAD + hostname);
 			} else {
-				requestUrl = new StringBuffer(CCConstants.HTTPS_HEAD + hostname);
+				requestUrl = new StringBuffer(CCConstants.HTTP_HEAD + hostname);
 			}
 			requestUrl.append(url);
 
