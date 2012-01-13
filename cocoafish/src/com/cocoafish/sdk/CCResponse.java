@@ -4,9 +4,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class CCResponse {
+import java.io.Serializable;
+
+public class CCResponse implements Serializable {
 	protected CCMeta meta;
-	protected JSONObject responseData;
+	protected transient JSONObject responseData;
+    protected String responseDataString;
 	protected CCResponse[] compoundResponses;
 	
 	public CCMeta getMeta()
@@ -18,6 +21,11 @@ public class CCResponse {
 	{
 		return responseData;
 	}
+
+    public String getResponseDataString()
+    {
+        return responseDataString;
+    }
 	
 	public CCResponse[] getCompoundResponses()
 	{
@@ -35,6 +43,7 @@ public class CCResponse {
 		}
 		try {
 			responseData = jObject.getJSONObject("response");
+            responseDataString = responseData.toString();
 			// check if this is a compound response
 			JSONArray responseArray = responseData.getJSONArray("responses");
 			if (responseArray.length() > 0) {

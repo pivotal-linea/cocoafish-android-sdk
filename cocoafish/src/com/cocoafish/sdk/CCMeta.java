@@ -3,7 +3,9 @@ package com.cocoafish.sdk;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class CCMeta {
+import java.io.Serializable;
+
+public class CCMeta implements Serializable {
 	private String status;
 	private int code;
 	private String message;

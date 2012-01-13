@@ -3,7 +3,9 @@ package com.cocoafish.sdk;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class CCPagination {
+import java.io.Serializable;
+
+public class CCPagination implements Serializable {
 	private int page; 	// current page
 	private int perPage; // per page count
 	private int totalPages; // total pages can be returned
